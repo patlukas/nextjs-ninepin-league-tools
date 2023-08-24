@@ -4,26 +4,124 @@ import {
   InputDate,
   InputCheckbox,
   InputButton,
-} from "@/src/form";
+} from "@/components/form";
 import { useState, useEffect } from "react";
-import { PDFDocument, PDFFont, PDFPage, rgb } from "pdf-lib";
-import fontkit from "@pdf-lib/fontkit";
+import { PDFDocument} from "pdf-lib";
+import { setFont, drawTextCenter } from "@/utils/pdfDoc";
+import fs from "fs";
+import path from "path";
 
 const SCALE = 842 / 1169;
 
 type FormData = {
   name: string;
+  font: string;
   club: string;
   date: string;
   players: { name: string; license: string }[];
   secondRegistration: boolean;
 };
 
-export default function Home() {
-  const [typeIndex, setTypeIndex] = useState(0);
-  const [listPlayers, setListPlayers] = useState<{value: string, label: string}[]>([]);
+type DropdownOption = {
+  value: string;
+  label: string;
+};
 
-  const typeOptions = [
+type TypeOption = {
+  value: string;
+  label: string;
+  name: string;
+  numberOfPlayersPlaying: number;
+  numberOfReservePlayers: number;
+  ageCategory: string[];
+};
+
+export default function Home({ fonts }: { fonts: string[] }) {
+  const [typeIndex, setTypeIndex] = useState(0);
+  const [listPlayers, setListPlayers] = useState<DropdownOption[]>([]);
+  useEffect(() => {
+    onLoadListPlayers();
+  }, []);
+
+  const typeOptions: TypeOption[] = getTypeOptions();
+  const fontOptions: DropdownOption[] = getFontOptions(fonts);
+
+  const onLoadListPlayers = async (index?: number) => {
+    if (index === undefined) index = typeIndex;
+    const { ageCategory } = typeOptions[index];
+    const listPlayers = await getListPlayers(ageCategory);
+    setListPlayers(listPlayers);
+  };
+
+  const onChangeTypeIndex = async (index: number) => {
+    const listSelectPlayers =
+      document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
+    listSelectPlayers.forEach((el) => (el.selectedIndex = 0));
+    setTypeIndex(index);
+    onLoadListPlayers(index);
+  };
+
+  return (
+    <>
+      <DropdownList
+        id="typeDropdown"
+        label="Rodzaj rozgrywek:"
+        options={typeOptions}
+        onChange={onChangeTypeIndex}
+      />
+      <DropdownList id="fontDropdown" label="Czcionka:" options={fontOptions} />
+      <InputText
+        id="nameInput"
+        label="Nazwa meczu:"
+        defaultValue={typeOptions[typeIndex].name}
+      />
+      <InputText id="clubInput" label="Klub:" defaultValue="KS Start Gostyń" />
+      <InputDate id="dateInput" label="Data:" />
+      <PlayersList listPlayers={listPlayers} {...typeOptions[typeIndex]} />
+      <InputCheckbox
+        id="secondRegistration"
+        label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
+      />
+      <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
+      <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
+    </>
+  );
+}
+
+export async function getServerSideProps() {
+  const fontFolderPath = path.join(process.cwd(), "public", "font");
+
+  try {
+    const fontFileNames = await fs.promises.readdir(fontFolderPath);
+    const fontNames = fontFileNames.filter((fileName) =>
+      fileName.endsWith(".ttf")
+    );
+
+    return {
+      props: {
+        fonts: fontNames,
+      },
+    };
+  } catch (error) {
+    console.error("Błąd podczas odczytu nazw plików fontów:", error);
+    return {
+      props: {
+        fonts: [],
+      },
+    };
+  }
+}
+
+const getFontOptions = (fonts: string[]): DropdownOption[] => {
+  let fontOptions: DropdownOption[] = [];
+  fonts.forEach((el) => {
+    fontOptions.push({ value: el, label: el.split(".")[0] });
+  });
+  return fontOptions;
+};
+
+const getTypeOptions = (): TypeOption[] => {
+  return [
     {
       value: "sm",
       label: "Superliga Mężczyzn",
@@ -48,61 +146,32 @@ export default function Home() {
       ],
     },
   ];
+};
 
-  useEffect(() => {
-    onLoadListPlayers()
-  }, []);
-
-  const onLoadListPlayers = async (index?: number) => {
-    if (index === undefined) index = typeIndex;
-    const {ageCategory} = typeOptions[index]
-    const result = await fetch("/api/get-licenses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({club: "KS Start Gostyń", ageCategory, validLicense: false})
-    })
-    const data: any[] = await result.json();
-    let listPlayers: any[] = [{value: "", label: ""}]
-    data.forEach(el => {
-      listPlayers.push({value: el.license, label: el.firstName + " " + el.secondName})
+const getListPlayers = async (
+  ageCategory: string[]
+): Promise<DropdownOption[]> => {
+  const result = await fetch("/api/get-licenses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      club: "KS Start Gostyń",
+      ageCategory,
+      validLicense: false,
+    }),
+  });
+  const data: any[] = await result.json();
+  let listPlayers: any[] = [{ value: "", label: "" }];
+  data.forEach((el) => {
+    listPlayers.push({
+      value: el.license,
+      label: el.firstName + " " + el.secondName,
     });
-    setListPlayers(listPlayers);
-  }
-
-  const onChangeTypeIndex = async (index: number) => {
-    const listSelectPlayers = document.querySelectorAll<HTMLSelectElement>(".selectingPlayers")
-    listSelectPlayers.forEach(el => el.selectedIndex = 0)
-    setTypeIndex(index);
-    onLoadListPlayers(index)
-  }
-
-  return (
-    <>
-      <DropdownList
-        id="typeDropdown"
-        label="Rodzaj rozgrywek:"
-        options={typeOptions}
-        onChange={onChangeTypeIndex}
-      />
-      <InputText
-        id="nameInput"
-        label="Nazwa meczu:"
-        defaultValue={typeOptions[typeIndex].name}
-      />
-      <InputText id="clubInput" label="Klub:" defaultValue="KS Start Gostyń" />
-      <InputDate id="dateInput" label="Data:" />
-      <PlayersList listPlayers={listPlayers} {...typeOptions[typeIndex]} />
-      <InputCheckbox
-        id="secondRegistration"
-        label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
-      />
-      <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
-      <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
-    </>
-  );
-}
+  });
+  return listPlayers;
+};
 
 const PlayersList = ({
   listPlayers,
@@ -117,6 +186,7 @@ const PlayersList = ({
   for (let i = 1; i <= numberOfPlayersPlaying; i++) {
     elPlayers.push(
       <DropdownList
+        key={"player_" + i}
         className="selectingPlayers"
         id={"player_" + i}
         label={"Graz " + i}
@@ -127,6 +197,7 @@ const PlayersList = ({
   for (let i = 1; i <= numberOfReservePlayers; i++) {
     elPlayers.push(
       <DropdownList
+        key={"reserve_" + i}
         className="selectingPlayers"
         id={"reserve_" + i}
         label={"Rezerwa " + i}
@@ -164,7 +235,7 @@ const onDownload = async () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "file.pdf";
+  a.download = "kregle_liga.pdf";
   a.style.display = "none";
   document.body.appendChild(a);
   a.click();
@@ -179,7 +250,8 @@ const onCretePdf = async (): Promise<Blob> => {
     `/application/application_${formData.players.length}.pdf`
   ).then((res) => res.arrayBuffer());
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
-  const font = await pdfDoc_setFont(pdfDoc, "/font/IBM.ttf");
+  console.log(formData.font)
+  const font = await setFont(pdfDoc, "/font/"+formData.font);
 
   if (formData.secondRegistration) {
     const firstPage = await pdfDoc.copyPages(pdfDoc, [0]);
@@ -187,14 +259,14 @@ const onCretePdf = async (): Promise<Blob> => {
   }
 
   const page = pdfDoc.getPage(0);
-  pdfDoc_drawText_center(page, font, formData.name, [254, 1079], [523, 18]);
-  pdfDoc_drawText_center(page, font, formData.club, [254, 1049], [256, 18]);
-  pdfDoc_drawText_center(page, font, formData.date, [581, 1049], [196, 18]);
+  drawTextCenter(page, font, formData.name, [254, 1079], [523, 18], SCALE);
+  drawTextCenter(page, font, formData.club, [254, 1049], [256, 18], SCALE);
+  drawTextCenter(page, font, formData.date, [581, 1049], [196, 18], SCALE);
 
   formData.players.forEach((el, index) => {
     const y = 997 - 26 * index;
-    pdfDoc_drawText_center(page, font, el.license, [101, y], [108, 18]);
-    pdfDoc_drawText_center(page, font, el.name, [216, y], [561, 18]);
+    drawTextCenter(page, font, el.license, [101, y], [108, 18], SCALE);
+    drawTextCenter(page, font, el.name, [216, y], [561, 18], SCALE);
   });
 
   const pdfBytes = await pdfDoc.save();
@@ -205,6 +277,7 @@ const onCretePdf = async (): Promise<Blob> => {
 const onReadDataFromForm = (): FormData => {
   let data: FormData = {
     name: document.querySelector<HTMLInputElement>("#nameInput")?.value ?? "",
+    font: document.querySelector<HTMLInputElement>("#fontDropdown")?.value ?? "",
     club: document.querySelector<HTMLInputElement>("#clubInput")?.value ?? "",
     date: document.querySelector<HTMLInputElement>("#dateInput")?.value ?? "",
     players: [],
@@ -222,43 +295,4 @@ const onReadDataFromForm = (): FormData => {
     });
   });
   return data;
-};
-
-const pdfDoc_drawText_center = (
-  page: PDFPage,
-  font: PDFFont,
-  text: string,
-  coords: [number, number],
-  sizeCell: [number, number],
-  color = rgb(0, 0, 0)
-): void => {
-  coords = [coords[0] * SCALE, coords[1] * SCALE];
-  sizeCell = [sizeCell[0] * SCALE, sizeCell[1] * SCALE];
-
-  const size = pdfDoc_getMaxFontSize(font, sizeCell[0], sizeCell[1], text);
-  const x = (sizeCell[0] - font.widthOfTextAtSize(text, size)) / 2 + coords[0];
-  page.drawText(text, { x, y: coords[1], size, font, color });
-};
-
-function pdfDoc_getMaxFontSize(
-  font: PDFFont,
-  maxWidth: number,
-  maxHeight: number,
-  text: string
-): number {
-  let size = 1;
-  while (font.widthOfTextAtSize(text, size) < maxWidth && size < maxHeight) {
-    size += 0.1;
-  }
-  return size;
-}
-
-const pdfDoc_setFont = async (
-  pdfDoc: PDFDocument,
-  fontPath: string
-): Promise<PDFFont> => {
-  const fontBytes = await fetch(fontPath).then((res) => res.arrayBuffer());
-  pdfDoc.registerFontkit(fontkit);
-  const font = await pdfDoc.embedFont(fontBytes);
-  return font;
 };
