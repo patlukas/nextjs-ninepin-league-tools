@@ -7,12 +7,35 @@
 }
 
 .containerBtn {
-    padding-top: 15px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
+  padding-top: 15px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
 }
 
-.rowDuplicatedPlayer {
-  color: blue;
+.containerPlayers {
+  border: 3px dotted #aaa;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  border-radius: 20px;
+  position: relative;
+}
+
+.containerPlayersTitle {
+  background-color: rgb(100, 100, 100);
+  color: #aaa;
+  font-weight: 700;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: auto;
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.duplicatePlayer {
+  background-color: #800;
 }

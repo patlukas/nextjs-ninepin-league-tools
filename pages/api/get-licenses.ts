@@ -11,12 +11,14 @@ export default async function handler(
   res: NextApiResponse<License[]>
 ) {
   if (req.method == "POST") {
-    const { club, ageCategory, validLicense} = req.body;
+    const { club, ageCategory, validLicense, possibleLoan } = req.body;
     const allLicenses = await getAllLicenses();
     let licenses: any[] = [];
     allLicenses.forEach((el) => {
       if (!ageCategory.includes(el.ageCategory)) return;
-      if (club != el.club) return;
+      if(!possibleLoan && club != el.club) return;
+      if (possibleLoan && el.loanedClub == "" && club != el.club) return;
+      if (possibleLoan && el.loanedClub != "" && club != el.loanedClub) return;
       if (validLicense && !el.validLicense) return;
       licenses.push(el);
     });

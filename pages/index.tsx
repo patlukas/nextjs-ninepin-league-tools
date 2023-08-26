@@ -6,11 +6,12 @@ import {
   InputButton,
 } from "@/components/form";
 import { useState, useEffect } from "react";
-import { PDFDocument} from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 import { setFont, drawTextCenter } from "@/utils/pdfDoc";
 import fs from "fs";
 import path from "path";
-import styles from '@/styles/index.module.css' 
+import styles from "@/styles/index.module.css";
+import { getListPlayers } from "@/utils/getPlayers";
 
 const SCALE = 842 / 1169;
 
@@ -35,6 +36,7 @@ type TypeOption = {
   numberOfPlayersPlaying: number;
   numberOfReservePlayers: number;
   ageCategory: string[];
+  possibleLoan: boolean;
 };
 
 export default function Home({ fonts }: { fonts: string[] }) {
@@ -49,8 +51,12 @@ export default function Home({ fonts }: { fonts: string[] }) {
 
   const onLoadListPlayers = async (index?: number) => {
     if (index === undefined) index = typeIndex;
-    const { ageCategory } = typeOptions[index];
-    const listPlayers = await getListPlayers(ageCategory);
+    const { ageCategory, possibleLoan } = typeOptions[index];
+    const listPlayers = await getListPlayers(
+      "KS Start Gostyń",
+      ageCategory,
+      possibleLoan
+    );
     setListPlayers(listPlayers);
   };
 
@@ -58,6 +64,7 @@ export default function Home({ fonts }: { fonts: string[] }) {
     const listSelectPlayers =
       document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
     listSelectPlayers.forEach((el) => (el.selectedIndex = 0));
+    listSelectPlayers.forEach((el) => (el.classList.remove(styles.duplicatePlayer)));
     setTypeIndex(index);
     onLoadListPlayers(index);
   };
@@ -84,8 +91,8 @@ export default function Home({ fonts }: { fonts: string[] }) {
         label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
       />
       <div className={styles.containerBtn}>
-        <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
         <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
+        <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
       </div>
     </div>
   );
@@ -132,6 +139,7 @@ const getTypeOptions = (): TypeOption[] => {
       numberOfPlayersPlaying: 6,
       numberOfReservePlayers: 4,
       ageCategory: ["Junior młodszy", "Junior", "Mężczyzna"],
+      possibleLoan: true,
     },
     {
       value: "clm",
@@ -147,33 +155,9 @@ const getTypeOptions = (): TypeOption[] => {
         "Juniorka",
         "Junior",
       ],
+      possibleLoan: true,
     },
   ];
-};
-
-const getListPlayers = async (
-  ageCategory: string[]
-): Promise<DropdownOption[]> => {
-  const result = await fetch("/api/get-licenses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      club: "KS Start Gostyń",
-      ageCategory,
-      validLicense: false,
-    }),
-  });
-  const data: any[] = await result.json();
-  let listPlayers: any[] = [{ value: "", label: "" }];
-  data.forEach((el) => {
-    listPlayers.push({
-      value: el.license,
-      label: el.firstName + " " + el.secondName,
-    });
-  });
-  return listPlayers;
 };
 
 const PlayersList = ({
@@ -194,6 +178,7 @@ const PlayersList = ({
         id={"player_" + i}
         label={"Zawodnik " + i + ":"}
         options={listPlayers}
+        onChange={onCheckDuplicatePlayer}
       />
     );
   }
@@ -205,10 +190,16 @@ const PlayersList = ({
         id={"reserve_" + i}
         label={"Zawodnik rezerwowy " + i + ":"}
         options={listPlayers}
+        onChange={onCheckDuplicatePlayer}
       />
     );
   }
-  return <div>{elPlayers}</div>;
+  return (
+    <div className={styles.containerPlayers}>
+      <p className={styles.containerPlayersTitle}>Skład drużyny</p>
+      {elPlayers}
+    </div>
+  );
 };
 
 const onPrint = async () => {
@@ -253,8 +244,8 @@ const onCretePdf = async (): Promise<Blob> => {
     `/application/application_${formData.players.length}.pdf`
   ).then((res) => res.arrayBuffer());
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
-  console.log(formData.font)
-  const font = await setFont(pdfDoc, "/font/"+formData.font);
+  console.log(formData.font);
+  const font = await setFont(pdfDoc, "/font/" + formData.font);
 
   if (formData.secondRegistration) {
     const firstPage = await pdfDoc.copyPages(pdfDoc, [0]);
@@ -280,7 +271,8 @@ const onCretePdf = async (): Promise<Blob> => {
 const onReadDataFromForm = (): FormData => {
   let data: FormData = {
     name: document.querySelector<HTMLInputElement>("#nameInput")?.value ?? "",
-    font: document.querySelector<HTMLInputElement>("#fontDropdown")?.value ?? "",
+    font:
+      document.querySelector<HTMLInputElement>("#fontDropdown")?.value ?? "",
     club: document.querySelector<HTMLInputElement>("#clubInput")?.value ?? "",
     date: document.querySelector<HTMLInputElement>("#dateInput")?.value ?? "",
     players: [],
@@ -299,3 +291,24 @@ const onReadDataFromForm = (): FormData => {
   });
   return data;
 };
+
+const onCheckDuplicatePlayer = (_: number) => {
+  const listSelectPlayers =
+      document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
+  let selectedPlayers: any = {}
+  listSelectPlayers.forEach((el: HTMLSelectElement, index: number) => {
+    el.classList.remove(styles.duplicatePlayer);
+    const selected = el.selectedIndex;
+    if(selected == 0) return;
+    if (selected in selectedPlayers) {
+      if(selectedPlayers[selected].length == 1) {
+        listSelectPlayers[selectedPlayers[selected][0]].classList.add(styles.duplicatePlayer)
+      }
+      listSelectPlayers[index].classList.add(styles.duplicatePlayer);
+    }
+    else {
+      selectedPlayers[selected] = [];
+    }
+    selectedPlayers[selected].push(index)
+  })
+}
