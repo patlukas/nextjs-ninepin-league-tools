@@ -10,6 +10,7 @@ import { PDFDocument} from "pdf-lib";
 import { setFont, drawTextCenter } from "@/utils/pdfDoc";
 import fs from "fs";
 import path from "path";
+import styles from '@/styles/index.module.css' 
 
 const SCALE = 842 / 1169;
 
@@ -62,14 +63,14 @@ export default function Home({ fonts }: { fonts: string[] }) {
   };
 
   return (
-    <>
+    <div className={styles.container}>
+      <DropdownList id="fontDropdown" label="Czcionka:" options={fontOptions} />
       <DropdownList
         id="typeDropdown"
         label="Rodzaj rozgrywek:"
         options={typeOptions}
         onChange={onChangeTypeIndex}
       />
-      <DropdownList id="fontDropdown" label="Czcionka:" options={fontOptions} />
       <InputText
         id="nameInput"
         label="Nazwa meczu:"
@@ -82,9 +83,11 @@ export default function Home({ fonts }: { fonts: string[] }) {
         id="secondRegistration"
         label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
       />
-      <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
-      <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
-    </>
+      <div className={styles.containerBtn}>
+        <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
+        <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
+      </div>
+    </div>
   );
 }
 
@@ -189,7 +192,7 @@ const PlayersList = ({
         key={"player_" + i}
         className="selectingPlayers"
         id={"player_" + i}
-        label={"Graz " + i}
+        label={"Zawodnik " + i + ":"}
         options={listPlayers}
       />
     );
@@ -200,7 +203,7 @@ const PlayersList = ({
         key={"reserve_" + i}
         className="selectingPlayers"
         id={"reserve_" + i}
-        label={"Rezerwa " + i}
+        label={"Zawodnik rezerwowy " + i + ":"}
         options={listPlayers}
       />
     );

@@ -1,3 +1,5 @@
+import styles from '@/styles/form.module.css' 
+
 export const InputText = ({
   id,
   label,
@@ -9,9 +11,9 @@ export const InputText = ({
 }) => {
   if (defaultValue === undefined) defaultValue = "";
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <input type="text" name={id} id={id} defaultValue={defaultValue} />
+    <div className={styles.container}>
+      <label htmlFor={id} className={styles.label}>{label}</label>
+      <input type="text" name={id} id={id} defaultValue={defaultValue} className={styles.input}/>
     </div>
   );
 };
@@ -35,12 +37,12 @@ export const DropdownList = ({
     </option>
   ));
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
+    <div className={styles.container}>
+      <label htmlFor={id} className={styles.label}>{label}</label>
       <select
         name={id}
         id={id}
-        className={className}
+        className={className + " " + styles.input}
         onChange={(e) => onChange(e.target.selectedIndex)}
       >
         {optionsElements}
@@ -57,18 +59,18 @@ export const InputDate = ({ id, label }: { id: string; label: string }) => {
   var todayDate = new Date().toISOString().slice(0, 10);
   console.log(todayDate);
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <input type="date" name={id} id={id} defaultValue={todayDate} />
+    <div className={styles.container}>
+      <label htmlFor={id} className={styles.label}>{label}</label>
+      <input type="date" name={id} id={id} className={styles.input} defaultValue={todayDate} />
     </div>
   );
 };
 
 export const InputCheckbox = ({ id, label }: { id: string; label: string }) => {
   return (
-    <div>
+    <div className={styles.container}>
       <input type="checkbox" name={id} id={id} />
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id} className={styles.labelCheckbox}>{label}</label>
     </div>
   );
 };
@@ -79,6 +81,6 @@ export const InputButton = ({ id, label, onClick }: { id: string; label: string,
     onClick();
   }
     return (
-        <input type="submit" id={id} value={label} onClick={clickFunction}/>
+        <input type="submit" id={id} value={label} onClick={clickFunction} className={styles.btn} />
     );
   };
