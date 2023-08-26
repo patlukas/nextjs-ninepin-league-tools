@@ -12,6 +12,8 @@ import fs from "fs";
 import path from "path";
 import styles from "@/styles/index.module.css";
 import { getListPlayers } from "@/utils/getPlayers";
+import Title from "@/components/Title";
+import Section from "@/components/Section";
 
 const SCALE = 842 / 1169;
 
@@ -64,35 +66,54 @@ export default function Home({ fonts }: { fonts: string[] }) {
     const listSelectPlayers =
       document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
     listSelectPlayers.forEach((el) => (el.selectedIndex = 0));
-    listSelectPlayers.forEach((el) => (el.classList.remove(styles.duplicatePlayer)));
+    listSelectPlayers.forEach((el) =>
+      el.classList.remove(styles.duplicatePlayer)
+    );
     setTypeIndex(index);
     onLoadListPlayers(index);
   };
 
   return (
     <div className={styles.container}>
-      <DropdownList id="fontDropdown" label="Czcionka:" options={fontOptions} />
-      <DropdownList
-        id="typeDropdown"
-        label="Rodzaj rozgrywek:"
-        options={typeOptions}
-        onChange={onChangeTypeIndex}
-      />
-      <InputText
-        id="nameInput"
-        label="Nazwa meczu:"
-        defaultValue={typeOptions[typeIndex].name}
-      />
-      <InputText id="clubInput" label="Klub:" defaultValue="KS Start Gostyń" />
-      <InputDate id="dateInput" label="Data:" />
-      <PlayersList listPlayers={listPlayers} {...typeOptions[typeIndex]} />
-      <InputCheckbox
-        id="secondRegistration"
-        label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
-      />
-      <div className={styles.containerBtn}>
-        <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
-        <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
+      <Title title={"Generator dokumentów meczowych"} />
+      <div className={styles.columnContainer}>
+        <div className={styles.column}>
+          <Section title="Główne ustawienia">
+            <DropdownList
+              id="fontDropdown"
+              label="Czcionka:"
+              options={fontOptions}
+            />
+            <DropdownList
+              id="typeDropdown"
+              label="Rodzaj rozgrywek:"
+              options={typeOptions}
+              onChange={onChangeTypeIndex}
+            />
+            <InputText
+              id="nameInput"
+              label="Nazwa meczu:"
+              defaultValue={typeOptions[typeIndex].name}
+            />
+            <InputText
+              id="clubInput"
+              label="Klub:"
+              defaultValue="KS Start Gostyń"
+            />
+            <InputDate id="dateInput" label="Data:" />
+            <InputCheckbox
+              id="secondRegistration"
+              label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
+            />
+            <div className={styles.containerBtn}>
+              <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
+              <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
+            </div>
+          </Section>
+        </div>
+        <div className={styles.column}>
+          <PlayersList listPlayers={listPlayers} {...typeOptions[typeIndex]} />
+        </div>
       </div>
     </div>
   );
@@ -194,12 +215,7 @@ const PlayersList = ({
       />
     );
   }
-  return (
-    <div className={styles.containerPlayers}>
-      <p className={styles.containerPlayersTitle}>Skład drużyny</p>
-      {elPlayers}
-    </div>
-  );
+  return <Section title={"Skład drużyny"}>{elPlayers}</Section>;
 };
 
 const onPrint = async () => {
@@ -294,21 +310,22 @@ const onReadDataFromForm = (): FormData => {
 
 const onCheckDuplicatePlayer = (_: number) => {
   const listSelectPlayers =
-      document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
-  let selectedPlayers: any = {}
+    document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
+  let selectedPlayers: any = {};
   listSelectPlayers.forEach((el: HTMLSelectElement, index: number) => {
     el.classList.remove(styles.duplicatePlayer);
     const selected = el.selectedIndex;
-    if(selected == 0) return;
+    if (selected == 0) return;
     if (selected in selectedPlayers) {
-      if(selectedPlayers[selected].length == 1) {
-        listSelectPlayers[selectedPlayers[selected][0]].classList.add(styles.duplicatePlayer)
+      if (selectedPlayers[selected].length == 1) {
+        listSelectPlayers[selectedPlayers[selected][0]].classList.add(
+          styles.duplicatePlayer
+        );
       }
       listSelectPlayers[index].classList.add(styles.duplicatePlayer);
-    }
-    else {
+    } else {
       selectedPlayers[selected] = [];
     }
-    selectedPlayers[selected].push(index)
-  })
-}
+    selectedPlayers[selected].push(index);
+  });
+};

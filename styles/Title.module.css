@@ -1,0 +1,8 @@
+.container {
+  width: 100%;
+  /* background-color: aqua; */
+  text-align: center;
+  font-size: 25px;
+  font-weight: 700;
+  padding-top: 10px;
+}
