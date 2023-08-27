@@ -25,7 +25,7 @@ export const DropdownList = ({
   options,
   onChange,
 }: {
-  id: string;
+  id?: string;
   label: string;
   options: { value: string | number; label: string | number }[];
   onChange: (index: number) => void;
@@ -75,7 +75,7 @@ export const InputCheckbox = ({ id, label }: { id: string; label: string }) => {
   );
 };
 
-export const InputButton = ({ id, label, onClick }: { id: string; label: string, onClick: () => {} }) => {
+export const InputButton = ({ id, label, onClick }: { id: string; label: string, onClick: () => void }) => {
   const clickFunction = (event: any) =>{
     event.preventDefault();
     onClick();

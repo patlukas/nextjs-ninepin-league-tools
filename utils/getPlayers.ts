@@ -1,9 +1,16 @@
+type LicenseReturn = {
+  name: string;
+  license: string;
+  club: string;
+  ageCategory: string;
+}
+
 export const getListPlayers = async (
   club: string,
   ageCategory: string[],
   possibleLoan: boolean,
   validLicense: boolean = true
-): Promise<{ value: string; label: string }[]> => {
+): Promise<LicenseReturn[]> => {
   const result = await fetch("/api/get-licenses", {
     method: "POST",
     headers: {
@@ -16,13 +23,6 @@ export const getListPlayers = async (
       possibleLoan,
     }),
   });
-  const data: any[] = await result.json();
-  let listPlayers: any[] = [{ value: "", label: "" }];
-  data.forEach((el) => {
-    listPlayers.push({
-      value: el.license,
-      label: el.firstName + " " + el.secondName,
-    });
-  });
+  const listPlayers: LicenseReturn[] = await result.json();
   return listPlayers;
 };

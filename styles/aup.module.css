@@ -1,0 +1,53 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100vw;
+  min-height: 100vh;
+  height: fit-content;
+  background-color: rgb(100, 100, 100);
+  width: fit-content;
+  margin: 0 auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 20px;
+}
+
+.typeContainer {
+  width: 300px;
+}
+
+.column {
+  float: left;
+  height: fit-content;
+  padding: 5px;
+  margin: 10px;
+  margin-top: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.defaultClub {
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 9px;
+}
+
+.btnContainer {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+}
+
+.instruction {
+    word-wrap: break-word;
+    padding-top: 10px;
+    padding-left: 15px;
+}
+
+.cell {
+    color: #800;
+    font-weight: 700;
+}

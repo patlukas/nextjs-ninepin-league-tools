@@ -54,11 +54,18 @@ export default function Home({ fonts }: { fonts: string[] }) {
   const onLoadListPlayers = async (index?: number) => {
     if (index === undefined) index = typeIndex;
     const { ageCategory, possibleLoan } = typeOptions[index];
-    const listPlayers = await getListPlayers(
+    const listPlayersFromApi = await getListPlayers(
       "KS Start Gostyń",
       ageCategory,
       possibleLoan
     );
+    let listPlayers: any[] = [{ value: "", label: "" }];
+    listPlayersFromApi.forEach((el) => {
+      listPlayers.push({
+        value: el.license,
+        label: el.name,
+      });
+    });
     setListPlayers(listPlayers);
   };
 
@@ -77,43 +84,41 @@ export default function Home({ fonts }: { fonts: string[] }) {
     <div className={styles.container}>
       <Title title={"Generator dokumentów meczowych"} />
       <div className={styles.columnContainer}>
-        <div className={styles.column}>
-          <Section title="Główne ustawienia">
-            <DropdownList
-              id="fontDropdown"
-              label="Czcionka:"
-              options={fontOptions}
-            />
-            <DropdownList
-              id="typeDropdown"
-              label="Rodzaj rozgrywek:"
-              options={typeOptions}
-              onChange={onChangeTypeIndex}
-            />
-            <InputText
-              id="nameInput"
-              label="Nazwa meczu:"
-              defaultValue={typeOptions[typeIndex].name}
-            />
-            <InputText
-              id="clubInput"
-              label="Klub:"
-              defaultValue="KS Start Gostyń"
-            />
-            <InputDate id="dateInput" label="Data:" />
-            <InputCheckbox
-              id="secondRegistration"
-              label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
-            />
-            <div className={styles.containerBtn}>
-              <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
-              <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
-            </div>
-          </Section>
-        </div>
-        <div className={styles.column}>
+        <Section title="Główne ustawienia" className={styles.column}>
+          <DropdownList
+            id="fontDropdown"
+            label="Czcionka:"
+            options={fontOptions}
+          />
+          <DropdownList
+            id="typeDropdown"
+            label="Rodzaj rozgrywek:"
+            options={typeOptions}
+            onChange={onChangeTypeIndex}
+          />
+          <InputText
+            id="nameInput"
+            label="Nazwa meczu:"
+            defaultValue={typeOptions[typeIndex].name}
+          />
+          <InputText
+            id="clubInput"
+            label="Klub:"
+            defaultValue="KS Start Gostyń"
+          />
+          <InputDate id="dateInput" label="Data:" />
+          <InputCheckbox
+            id="secondRegistration"
+            label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
+          />
+          <div className={styles.containerBtn}>
+            <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
+            <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
+          </div>
+        </Section>
+        <Section title="Skład drużyny" className={styles.column}>
           <PlayersList listPlayers={listPlayers} {...typeOptions[typeIndex]} />
-        </div>
+        </Section>
       </div>
     </div>
   );
@@ -176,7 +181,7 @@ const getTypeOptions = (): TypeOption[] => {
         "Juniorka",
         "Junior",
       ],
-      possibleLoan: true,
+      possibleLoan: false,
     },
   ];
 };
@@ -215,7 +220,7 @@ const PlayersList = ({
       />
     );
   }
-  return <Section title={"Skład drużyny"}>{elPlayers}</Section>;
+  return elPlayers;
 };
 
 const onPrint = async () => {
