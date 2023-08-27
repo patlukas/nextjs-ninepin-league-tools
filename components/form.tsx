@@ -57,7 +57,6 @@ DropdownList.defaultProps = {
 
 export const InputDate = ({ id, label }: { id: string; label: string }) => {
   var todayDate = new Date().toISOString().slice(0, 10);
-  console.log(todayDate);
   return (
     <div className={styles.container}>
       <label htmlFor={id} className={styles.label}>{label}</label>

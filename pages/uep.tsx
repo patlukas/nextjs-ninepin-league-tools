@@ -5,6 +5,7 @@ import { DropdownList, InputButton } from "@/components/form";
 import styles from "@/styles/aup.module.css";
 import { getListPlayers } from "@/utils/getPlayers";
 import TableSheet from "@/components/TableSheet";
+import Navigate from "@/components/Navigate";
 
 type TypeOption = {
   value: string;
@@ -22,7 +23,7 @@ type DropdownOption = {
 
 type PlayersByClub = { [key: string]: DropdownOption[] };
 
-export default function Aup() {
+export default function Uep() {
   const [typeIndex, setTypeIndex] = useState(0);
   const [playersByClub, setPlayersByClub] = useState<PlayersByClub>({});
 
@@ -39,7 +40,8 @@ export default function Aup() {
 
   return (
     <div className={styles.container}>
-      <Title title="Asystent Uzupełniania Protokołu" />
+      <Title title="Uzupełnianie Elektronicznego Protokołu" />
+      <Navigate />
       <Section title="Ustawienia" className={styles.typeContainer}>
         <DropdownList
           label="Rodzaj rozgrywek"
@@ -49,9 +51,9 @@ export default function Aup() {
           onChange={onChangeType}
         />
       </Section>
-      <div>
+      <div className={styles.columnContainer}>
         <Section title="Gospodarze" className={styles.column}>
-          <AupForm
+          <UepForm
             key={typeIndex}
             playersByClub={playersByClub}
             defaultClub="KS Start Gostyń"
@@ -61,7 +63,7 @@ export default function Aup() {
           />
         </Section>
         <Section title="Goście" className={styles.column}>
-          <AupForm
+          <UepForm
             key={typeIndex}
             playersByClub={playersByClub}
             className="players_guest"
@@ -96,7 +98,7 @@ const onGetPlayersByClub = async ({
   return playersByClub;
 };
 
-const AupForm = ({
+const UepForm = ({
   numberOfPlayersPlaying,
   numberOfReservePlayers,
   playersByClub,

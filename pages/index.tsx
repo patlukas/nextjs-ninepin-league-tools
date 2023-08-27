@@ -14,6 +14,7 @@ import styles from "@/styles/index.module.css";
 import { getListPlayers } from "@/utils/getPlayers";
 import Title from "@/components/Title";
 import Section from "@/components/Section";
+import Navigate from "@/components/Navigate";
 
 const SCALE = 842 / 1169;
 
@@ -82,7 +83,8 @@ export default function Home({ fonts }: { fonts: string[] }) {
 
   return (
     <div className={styles.container}>
-      <Title title={"Generator dokumentów meczowych"} />
+      <Title title={"Drukowanie Dokumentów Meczowych"} />
+      <Navigate />
       <div className={styles.columnContainer}>
         <Section title="Główne ustawienia" className={styles.column}>
           <DropdownList
@@ -265,7 +267,6 @@ const onCretePdf = async (): Promise<Blob> => {
     `/application/application_${formData.players.length}.pdf`
   ).then((res) => res.arrayBuffer());
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
-  console.log(formData.font);
   const font = await setFont(pdfDoc, "/font/" + formData.font);
 
   if (formData.secondRegistration) {
