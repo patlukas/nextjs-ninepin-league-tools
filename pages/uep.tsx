@@ -166,7 +166,8 @@ const UepForm = ({
     setPlayers(emptyPlayers);
   };
 
-  const onChangePlayer = (player: number, index: number) => {
+  const onChangePlayer = (player: number, index: number, className: string) => {
+    onCheckDuplicatePlayer(className)
     setPlayers((old) => {
       old[player] = playersByClub[club][index];
       return old;
@@ -185,7 +186,7 @@ const UepForm = ({
         id={"player_" + i}
         label={"Zawodnik " + i + ":"}
         options={playersByClub[club]}
-        onChange={(index) => onChangePlayer(i - 1, index)}
+        onChange={(index) => onChangePlayer(i - 1, index, className)}
       />
     );
   }
@@ -198,7 +199,7 @@ const UepForm = ({
         label={"Zawodnik rezerwowy " + i + ":"}
         options={playersByClub[club]}
         onChange={(index) =>
-          onChangePlayer(numberOfPlayersPlaying + i - 1, index)
+          onChangePlayer(numberOfPlayersPlaying + i - 1, index, className)
         }
       />
     );
@@ -250,7 +251,6 @@ const Instruction = ({ cell }: { cell: string }) => {
 
 const copyTable = (className: string) => {
   const tableEl = document.querySelector("table." + className);
-  console.log(tableEl, "table ." + className);
   if (tableEl) {
     const range = document.createRange();
     range.selectNodeContents(tableEl);
@@ -292,4 +292,26 @@ const getTypeOptions = (): TypeOption[] => {
       possibleLoan: false,
     },
   ];
+};
+
+const onCheckDuplicatePlayer = (className: string) => {
+  const listSelectPlayers =
+    document.querySelectorAll<HTMLSelectElement>("."+className);
+  let selectedPlayers: {[key: number]: number[]} = {};
+  listSelectPlayers.forEach((el: HTMLSelectElement, index: number) => {
+    el.classList.remove(styles.duplicatePlayer);
+    const selected = el.selectedIndex;
+    if (selected == 0) return;
+    if (selected in selectedPlayers) {
+      if (selectedPlayers[selected].length == 1) {
+        listSelectPlayers[selectedPlayers[selected][0]].classList.add(
+          styles.duplicatePlayer
+        );
+      }
+      listSelectPlayers[index].classList.add(styles.duplicatePlayer);
+    } else {
+      selectedPlayers[selected] = [];
+    }
+    selectedPlayers[selected].push(index);
+  });
 };
