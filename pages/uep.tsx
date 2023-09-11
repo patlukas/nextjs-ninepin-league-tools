@@ -6,6 +6,7 @@ import styles from "@/styles/aup.module.css";
 import { getListPlayers, onListPlayerFilterSM } from "@/utils/getPlayers";
 import TableSheet from "@/components/TableSheet";
 import Navigate from "@/components/Navigate";
+import Alert from "@/src/Alert";
 
 type PlayerInfo = {
   name: string;
@@ -35,6 +36,7 @@ type PlayersByClub = {
 export default function Uep() {
   const [typeIndex, setTypeIndex] = useState(0);
   const [playersByClub, setPlayersByClub] = useState<PlayersByClub>({});
+  const [showCopyAlert, setShowCopyAlert] = useState<boolean>(false);
 
   useEffect(() => {
     onChangeType(0);
@@ -46,6 +48,11 @@ export default function Uep() {
     setPlayersByClub(await onGetPlayersByClub({ ...typeOptions[index] }));
     setTypeIndex(index);
   };
+
+  const afterCopy = () => {
+    setShowCopyAlert(true)
+    setInterval(() => setShowCopyAlert(false), 7500)
+  }
 
   return (
     <div className={styles.container}>
@@ -68,6 +75,7 @@ export default function Uep() {
             defaultClub="KS Start Gostyń"
             className="players_home"
             cell="A15"
+            afterCopy={afterCopy}
             {...typeOptions[typeIndex]}
           />
         </Section>
@@ -77,10 +85,12 @@ export default function Uep() {
             playersByClub={playersByClub}
             className="players_guest"
             cell="P15"
+            afterCopy={afterCopy}
             {...typeOptions[typeIndex]}
           />
         </Section>
       </div>
+      <Alert text="Skopiowano" show={showCopyAlert} onClick={() => setShowCopyAlert(false)}/>
     </div>
   );
 }
@@ -130,6 +140,7 @@ const UepForm = ({
   defaultClub,
   className,
   cell,
+  afterCopy
 }: {
   numberOfPlayersPlaying: number;
   numberOfReservePlayers: number;
@@ -137,6 +148,7 @@ const UepForm = ({
   defaultClub?: string;
   className: string;
   cell: string;
+  afterCopy: () => void
 }) => {
   const emptyPlayers: DropdownOption[] = [];
   for (let i = 0; i < numberOfPlayersPlaying + numberOfReservePlayers; i++) {
@@ -220,7 +232,7 @@ const UepForm = ({
         <InputButton
           id="btn"
           label="Kopiuj"
-          onClick={() => copyTable(className)}
+          onClick={() => {copyTable(className); afterCopy()}}
         />
       </div>
       <TableSheet
