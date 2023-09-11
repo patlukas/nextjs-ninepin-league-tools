@@ -3,7 +3,7 @@ import Section from "@/components/Section";
 import Title from "@/components/Title";
 import { DropdownList, InputButton } from "@/components/form";
 import styles from "@/styles/aup.module.css";
-import { getListPlayers } from "@/utils/getPlayers";
+import { getListPlayers, onListPlayerFilterSM } from "@/utils/getPlayers";
 import TableSheet from "@/components/TableSheet";
 import Navigate from "@/components/Navigate";
 
@@ -14,6 +14,7 @@ type TypeOption = {
   numberOfReservePlayers: number;
   ageCategory: string[];
   possibleLoan: boolean;
+  onListPlayerFilter?: any;
 };
 
 type DropdownOption = {
@@ -21,7 +22,9 @@ type DropdownOption = {
   label: string;
 };
 
-type PlayersByClub = { [key: string]: DropdownOption[] };
+type PlayersByClub = {
+  [key: string]: { name: string; value: string; label: string }[];
+};
 
 export default function Uep() {
   const [typeIndex, setTypeIndex] = useState(0);
@@ -79,9 +82,11 @@ export default function Uep() {
 const onGetPlayersByClub = async ({
   ageCategory,
   possibleLoan,
+  onListPlayerFilter,
 }: {
   ageCategory: string[];
   possibleLoan: boolean;
+  onListPlayerFilter?: any;
 }): Promise<PlayersByClub> => {
   const listPlayersFromApi = await getListPlayers(
     "",
@@ -91,10 +96,24 @@ const onGetPlayersByClub = async ({
   let playersByClub: PlayersByClub = { "": [] };
   listPlayersFromApi.forEach((el) => {
     if (!(el.club in playersByClub)) {
-      playersByClub[el.club] = [{ label: "", value: "" }];
+      playersByClub[el.club] = [{ label: "", value: "", name: "" }];
     }
-    playersByClub[el.club].push({ label: el.name, value: el.license });
+    playersByClub[el.club].push({
+      label: el.name,
+      value: el.license,
+      name: el.name,
+    });
   });
+  Object.keys(playersByClub).forEach((club) => {
+    playersByClub[club].sort((a, b) => {
+      return a.label > b.label ? 1 : -1;
+    });
+  });
+  if (onListPlayerFilter) {
+    playersByClub["KS Start Gostyń"] = onListPlayerFilter(
+      playersByClub["KS Start Gostyń"]
+    );
+  }
   return playersByClub;
 };
 
@@ -201,22 +220,24 @@ const UepForm = ({
         numberOfPlayersPlaying={numberOfPlayersPlaying}
         numberOfReservePlayers={numberOfReservePlayers}
       />
-      <Instruction cell={cell}/>
+      <Instruction cell={cell} />
     </>
   );
 };
 
-const Instruction = ({cell}: {cell: string}) => {
+const Instruction = ({ cell }: { cell: string }) => {
   return (
     <Section title="Instrukcja" className={styles.instruction}>
       <p>1. Wypełnij formularz</p>
       <p>2. Kliknij "Kopiuj"</p>
       <p>3. Przejdź do arkusza</p>
-      <p>4. Zaznacz komórkę <span className={styles.cell}>{cell}</span></p>
+      <p>
+        4. Zaznacz komórkę <span className={styles.cell}>{cell}</span>
+      </p>
       <p>5. Wklej skopiowany tekst</p>
     </Section>
-  )
-}
+  );
+};
 
 const copyTable = (className: string) => {
   const tableEl = document.querySelector("table." + className);
@@ -244,6 +265,7 @@ const getTypeOptions = (): TypeOption[] => {
       numberOfReservePlayers: 4,
       ageCategory: ["Junior młodszy", "Junior", "Mężczyzna"],
       possibleLoan: true,
+      onListPlayerFilter: onListPlayerFilterSM,
     },
     {
       value: "clm",

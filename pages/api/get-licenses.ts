@@ -13,6 +13,7 @@ type License = {
 
 type LicenseReturn = {
   name: string;
+  nameReverse: string;
   license: string;
   club: string;
   ageCategory: string;
@@ -31,6 +32,7 @@ export default async function handler(
       if (validLicense && !el.validLicense) return;
       let player: LicenseReturn = {
         name: el.firstName + " " + el.secondName,
+        nameReverse: el.secondName + " " + el.firstName,
         license: el.license,
         club: el.club,
         ageCategory: el.ageCategory,

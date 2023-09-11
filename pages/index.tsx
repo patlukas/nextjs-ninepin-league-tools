@@ -11,7 +11,7 @@ import { setFont, drawTextCenter } from "@/utils/pdfDoc";
 import fs from "fs";
 import path from "path";
 import styles from "@/styles/index.module.css";
-import { getListPlayers } from "@/utils/getPlayers";
+import { getListPlayers, onListPlayerFilterSM } from "@/utils/getPlayers";
 import Title from "@/components/Title";
 import Section from "@/components/Section";
 import Navigate from "@/components/Navigate";
@@ -32,6 +32,12 @@ type DropdownOption = {
   label: string;
 };
 
+type DropdownPlayers = {
+  value: string;
+  label: string;
+  name: string;
+}
+
 type TypeOption = {
   value: string;
   label: string;
@@ -40,11 +46,12 @@ type TypeOption = {
   numberOfReservePlayers: number;
   ageCategory: string[];
   possibleLoan: boolean;
+  onListPlayerFilter?: any
 };
 
 export default function Home({ fonts }: { fonts: string[] }) {
   const [typeIndex, setTypeIndex] = useState(0);
-  const [listPlayers, setListPlayers] = useState<DropdownOption[]>([]);
+  const [listPlayers, setListPlayers] = useState<DropdownPlayers[]>([]);
   useEffect(() => {
     onLoadListPlayers();
   }, []);
@@ -54,19 +61,23 @@ export default function Home({ fonts }: { fonts: string[] }) {
 
   const onLoadListPlayers = async (index?: number) => {
     if (index === undefined) index = typeIndex;
-    const { ageCategory, possibleLoan } = typeOptions[index];
+    const { ageCategory, possibleLoan, onListPlayerFilter } = typeOptions[index];
     const listPlayersFromApi = await getListPlayers(
       "KS Start Gostyń",
       ageCategory,
       possibleLoan
     );
-    let listPlayers: any[] = [{ value: "", label: "" }];
+    let listPlayers: DropdownPlayers[] = [{ value: "", label: "", name: "" }];
     listPlayersFromApi.forEach((el) => {
       listPlayers.push({
         value: el.license,
-        label: el.name,
+        label: el.nameReverse,
+        name: el.name
       });
     });
+    if(onListPlayerFilter) {
+      listPlayers = onListPlayerFilter(listPlayers)
+    }
     setListPlayers(listPlayers);
   };
 
@@ -114,8 +125,8 @@ export default function Home({ fonts }: { fonts: string[] }) {
             label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
           />
           <div className={styles.containerBtn}>
-            <InputButton id="btn2" label="Zapisz" onClick={onDownload} />
-            <InputButton id="btn1" label="Drukuj" onClick={onPrint} />
+            <InputButton id="btn2" label="Zapisz" onClick={() => onDownload(listPlayers)} />
+            <InputButton id="btn1" label="Drukuj" onClick={() => onPrint(listPlayers)} />
           </div>
         </Section>
         <Section title="Skład drużyny" className={styles.column}>
@@ -168,6 +179,7 @@ const getTypeOptions = (): TypeOption[] => {
       numberOfReservePlayers: 4,
       ageCategory: ["Junior młodszy", "Junior", "Mężczyzna"],
       possibleLoan: true,
+      onListPlayerFilter: onListPlayerFilterSM
     },
     {
       value: "clm",
@@ -225,8 +237,8 @@ const PlayersList = ({
   return elPlayers;
 };
 
-const onPrint = async () => {
-  const blob = await onCretePdf();
+const onPrint = async (listPlayers: DropdownPlayers[]) => {
+  const blob = await onCretePdf(listPlayers);
 
   const pdfUrl = URL.createObjectURL(blob);
   const iframe = document.createElement("iframe");
@@ -246,8 +258,8 @@ const onPrint = async () => {
   };
 };
 
-const onDownload = async () => {
-  const blob = await onCretePdf();
+const onDownload = async (listPlayers: DropdownPlayers[]) => {
+  const blob = await onCretePdf(listPlayers);
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -261,8 +273,8 @@ const onDownload = async () => {
   URL.revokeObjectURL(url);
 };
 
-const onCretePdf = async (): Promise<Blob> => {
-  const formData: FormData = onReadDataFromForm();
+const onCretePdf = async (listPlayers: DropdownPlayers[]): Promise<Blob> => {
+  const formData: FormData = onReadDataFromForm(listPlayers);
   const existingPdfBytes = await fetch(
     `/application/application_${formData.players.length}.pdf`
   ).then((res) => res.arrayBuffer());
@@ -290,7 +302,7 @@ const onCretePdf = async (): Promise<Blob> => {
   return blob;
 };
 
-const onReadDataFromForm = (): FormData => {
+const onReadDataFromForm = (listPlayers: DropdownPlayers[]): FormData => {
   let data: FormData = {
     name: document.querySelector<HTMLInputElement>("#nameInput")?.value ?? "",
     font:
@@ -307,7 +319,7 @@ const onReadDataFromForm = (): FormData => {
     document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
   players.forEach((el) => {
     data.players.push({
-      name: el.options[el.selectedIndex].text,
+      name: listPlayers[el.selectedIndex].name,
       license: el.value,
     });
   });
