@@ -36,7 +36,7 @@ type DropdownPlayers = {
   value: string;
   label: string;
   name: string;
-}
+};
 
 type TypeOption = {
   value: string;
@@ -46,7 +46,7 @@ type TypeOption = {
   numberOfReservePlayers: number;
   ageCategory: string[];
   possibleLoan: boolean;
-  onListPlayerFilter?: any
+  onListPlayerFilter?: (players: DropdownPlayers[]) => DropdownPlayers[];
 };
 
 export default function Home({ fonts }: { fonts: string[] }) {
@@ -61,7 +61,8 @@ export default function Home({ fonts }: { fonts: string[] }) {
 
   const onLoadListPlayers = async (index?: number) => {
     if (index === undefined) index = typeIndex;
-    const { ageCategory, possibleLoan, onListPlayerFilter } = typeOptions[index];
+    const { ageCategory, possibleLoan, onListPlayerFilter } =
+      typeOptions[index];
     const listPlayersFromApi = await getListPlayers(
       "KS Start Gostyń",
       ageCategory,
@@ -72,11 +73,11 @@ export default function Home({ fonts }: { fonts: string[] }) {
       listPlayers.push({
         value: el.license,
         label: el.nameReverse,
-        name: el.name
+        name: el.name,
       });
     });
-    if(onListPlayerFilter) {
-      listPlayers = onListPlayerFilter(listPlayers)
+    if (onListPlayerFilter) {
+      listPlayers = onListPlayerFilter(listPlayers);
     }
     setListPlayers(listPlayers);
   };
@@ -110,6 +111,7 @@ export default function Home({ fonts }: { fonts: string[] }) {
             onChange={onChangeTypeIndex}
           />
           <InputText
+            key={typeIndex}
             id="nameInput"
             label="Nazwa meczu:"
             defaultValue={typeOptions[typeIndex].name}
@@ -125,8 +127,16 @@ export default function Home({ fonts }: { fonts: string[] }) {
             label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
           />
           <div className={styles.containerBtn}>
-            <InputButton id="btn2" label="Zapisz" onClick={() => onDownload(listPlayers)} />
-            <InputButton id="btn1" label="Drukuj" onClick={() => onPrint(listPlayers)} />
+            <InputButton
+              id="btn2"
+              label="Zapisz"
+              onClick={() => onDownload(listPlayers)}
+            />
+            <InputButton
+              id="btn1"
+              label="Drukuj"
+              onClick={() => onPrint(listPlayers)}
+            />
           </div>
         </Section>
         <Section title="Skład drużyny" className={styles.column}>
@@ -179,7 +189,7 @@ const getTypeOptions = (): TypeOption[] => {
       numberOfReservePlayers: 4,
       ageCategory: ["Junior młodszy", "Junior", "Mężczyzna"],
       possibleLoan: true,
-      onListPlayerFilter: onListPlayerFilterSM
+      onListPlayerFilter: onListPlayerFilterSM,
     },
     {
       value: "clm",
@@ -329,7 +339,7 @@ const onReadDataFromForm = (listPlayers: DropdownPlayers[]): FormData => {
 const onCheckDuplicatePlayer = (_: number) => {
   const listSelectPlayers =
     document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
-  let selectedPlayers: any = {};
+  let selectedPlayers: {[key: number]: number[]} = {};
   listSelectPlayers.forEach((el: HTMLSelectElement, index: number) => {
     el.classList.remove(styles.duplicatePlayer);
     const selected = el.selectedIndex;

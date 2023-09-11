@@ -47,6 +47,7 @@ export const onListPlayerFilterSM = (players: Filter[]): Filter[] => {
     "Andrzej Zagata",
     "Bogusław Zagata",
     "Krzysztof Zagata",
+    "Szymon Banaszak"
   ]
   let playersResult: Filter[] = [];
   players.forEach(player => {

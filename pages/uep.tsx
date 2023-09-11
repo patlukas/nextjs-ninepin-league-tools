@@ -7,6 +7,12 @@ import { getListPlayers, onListPlayerFilterSM } from "@/utils/getPlayers";
 import TableSheet from "@/components/TableSheet";
 import Navigate from "@/components/Navigate";
 
+type PlayerInfo = {
+  name: string;
+  value: string;
+  label: string;
+};
+
 type TypeOption = {
   value: string;
   label: string;
@@ -14,7 +20,7 @@ type TypeOption = {
   numberOfReservePlayers: number;
   ageCategory: string[];
   possibleLoan: boolean;
-  onListPlayerFilter?: any;
+  onListPlayerFilter?: (players: PlayerInfo[]) => PlayerInfo[];
 };
 
 type DropdownOption = {
@@ -23,7 +29,7 @@ type DropdownOption = {
 };
 
 type PlayersByClub = {
-  [key: string]: { name: string; value: string; label: string }[];
+  [key: string]: PlayerInfo[];
 };
 
 export default function Uep() {
@@ -86,7 +92,7 @@ const onGetPlayersByClub = async ({
 }: {
   ageCategory: string[];
   possibleLoan: boolean;
-  onListPlayerFilter?: any;
+  onListPlayerFilter?: (players: PlayerInfo[]) => PlayerInfo[];
 }): Promise<PlayersByClub> => {
   const listPlayersFromApi = await getListPlayers(
     "",
@@ -144,6 +150,9 @@ const UepForm = ({
   let clubOptions: DropdownOption[] = [];
   Object.keys(playersByClub).forEach((key) => {
     clubOptions.push({ value: key, label: key });
+  });
+  clubOptions.sort((a, b) => {
+    return a.label > b.label ? 1 : -1;
   });
 
   const onSetClub = (index: number) => {
