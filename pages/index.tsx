@@ -184,7 +184,7 @@ const getTypeOptions = (): TypeOption[] => {
     {
       value: "sm",
       label: "Superliga Mężczyzn",
-      name: "Mecz SM nr",
+      name: "Mecz SM nr ",
       numberOfPlayersPlaying: 6,
       numberOfReservePlayers: 4,
       ageCategory: ["Junior młodszy", "Junior", "Mężczyzna"],
@@ -194,7 +194,7 @@ const getTypeOptions = (): TypeOption[] => {
     {
       value: "clm",
       label: "CLM",
-      name: "Mecz CLM nr",
+      name: "Mecz CLM nr ",
       numberOfPlayersPlaying: 4,
       numberOfReservePlayers: 3,
       ageCategory: [

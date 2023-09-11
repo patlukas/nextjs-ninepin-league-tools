@@ -49,9 +49,13 @@ export default function Uep() {
     setTypeIndex(index);
   };
 
-  const afterCopy = () => {
+  const afterCopy = async () => {
+    if(showCopyAlert) {
+      setShowCopyAlert(false)
+      await new Promise(r => setTimeout(r, 150));
+    }
     setShowCopyAlert(true)
-    setInterval(() => setShowCopyAlert(false), 7500)
+    setTimeout(() => setShowCopyAlert(false), 4000)
   }
 
   return (
