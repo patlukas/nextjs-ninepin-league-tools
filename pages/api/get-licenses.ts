@@ -57,7 +57,7 @@ const getAllLicenses = async (): Promise<License[]> => {
   rows.shift();
   rows.forEach((row) => {
     const cells = row.replaceAll('"', "").split(",");
-    cells.map((cell) => cell.trim());
+    cells.map((cell, index) => cells[index] = cell.trim());
 
     const indexLastSpace = cells[3].lastIndexOf(" ");
     const firstName =

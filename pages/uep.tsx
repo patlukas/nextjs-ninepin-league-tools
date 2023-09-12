@@ -50,13 +50,13 @@ export default function Uep() {
   };
 
   const afterCopy = async () => {
-    if(showCopyAlert) {
-      setShowCopyAlert(false)
-      await new Promise(r => setTimeout(r, 150));
+    if (showCopyAlert) {
+      setShowCopyAlert(false);
+      await new Promise((r) => setTimeout(r, 150));
     }
-    setShowCopyAlert(true)
-    setTimeout(() => setShowCopyAlert(false), 4000)
-  }
+    setShowCopyAlert(true);
+    setTimeout(() => setShowCopyAlert(false), 4000);
+  };
 
   return (
     <div className={styles.container}>
@@ -94,7 +94,11 @@ export default function Uep() {
           />
         </Section>
       </div>
-      <Alert text="Skopiowano" show={showCopyAlert} onClick={() => setShowCopyAlert(false)}/>
+      <Alert
+        text="Skopiowano"
+        show={showCopyAlert}
+        onClick={() => setShowCopyAlert(false)}
+      />
     </div>
   );
 }
@@ -113,20 +117,24 @@ const onGetPlayersByClub = async ({
     ageCategory,
     possibleLoan
   );
-  let playersByClub: PlayersByClub = { "": [] };
+  let playersByClub: PlayersByClub = {
+    "": [{ label: "", value: "", name: "" }],
+  };
   listPlayersFromApi.forEach((el) => {
     if (!(el.club in playersByClub)) {
       playersByClub[el.club] = [{ label: "", value: "", name: "" }];
     }
-    playersByClub[el.club].push({
+    const player = {
       label: el.name,
       value: el.license,
       name: el.name,
-    });
+    };
+    playersByClub[el.club].push(player);
+    playersByClub[""].push(player);
   });
   Object.keys(playersByClub).forEach((club) => {
     playersByClub[club].sort((a, b) => {
-      return a.label > b.label ? 1 : -1;
+      return a.label.localeCompare(b.label);
     });
   });
   if (onListPlayerFilter) {
@@ -134,6 +142,7 @@ const onGetPlayersByClub = async ({
       playersByClub["KS Start Gostyń"]
     );
   }
+  console.log(playersByClub)
   return playersByClub;
 };
 
@@ -144,7 +153,7 @@ const UepForm = ({
   defaultClub,
   className,
   cell,
-  afterCopy
+  afterCopy,
 }: {
   numberOfPlayersPlaying: number;
   numberOfReservePlayers: number;
@@ -152,7 +161,7 @@ const UepForm = ({
   defaultClub?: string;
   className: string;
   cell: string;
-  afterCopy: () => void
+  afterCopy: () => void;
 }) => {
   const emptyPlayers: DropdownOption[] = [];
   for (let i = 0; i < numberOfPlayersPlaying + numberOfReservePlayers; i++) {
@@ -168,7 +177,7 @@ const UepForm = ({
     clubOptions.push({ value: key, label: key });
   });
   clubOptions.sort((a, b) => {
-    return a.label > b.label ? 1 : -1;
+    return a.label.localeCompare(b.label);
   });
 
   const onSetClub = (index: number) => {
@@ -183,7 +192,7 @@ const UepForm = ({
   };
 
   const onChangePlayer = (player: number, index: number, className: string) => {
-    onCheckDuplicatePlayer(className)
+    onCheckDuplicatePlayer(className);
     setPlayers((old) => {
       old[player] = playersByClub[club][index];
       return old;
@@ -236,7 +245,10 @@ const UepForm = ({
         <InputButton
           id="btn"
           label="Kopiuj"
-          onClick={() => {copyTable(className); afterCopy()}}
+          onClick={() => {
+            copyTable(className);
+            afterCopy();
+          }}
         />
       </div>
       <TableSheet
@@ -311,9 +323,10 @@ const getTypeOptions = (): TypeOption[] => {
 };
 
 const onCheckDuplicatePlayer = (className: string) => {
-  const listSelectPlayers =
-    document.querySelectorAll<HTMLSelectElement>("."+className);
-  let selectedPlayers: {[key: number]: number[]} = {};
+  const listSelectPlayers = document.querySelectorAll<HTMLSelectElement>(
+    "." + className
+  );
+  let selectedPlayers: { [key: number]: number[] } = {};
   listSelectPlayers.forEach((el: HTMLSelectElement, index: number) => {
     el.classList.remove(styles.duplicatePlayer);
     const selected = el.selectedIndex;

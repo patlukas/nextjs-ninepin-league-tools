@@ -32,7 +32,7 @@ export const DropdownList = ({
   className?: string;
 }) => {
   const optionsElements = options.map((el, index) => (
-    <option key={index} value={el.value}>
+    <option key={index} value={el.value} className={styles.pointer}>
       {el.label}
     </option>
   ));
@@ -42,7 +42,7 @@ export const DropdownList = ({
       <select
         name={id}
         id={id}
-        className={className + " " + styles.input}
+        className={className + " " + styles.input + " " + styles.pointer}
         onChange={(e) => onChange(e.target.selectedIndex)}
       >
         {optionsElements}
@@ -60,7 +60,7 @@ export const InputDate = ({ id, label }: { id: string; label: string }) => {
   return (
     <div className={styles.container}>
       <label htmlFor={id} className={styles.label}>{label}</label>
-      <input type="date" name={id} id={id} className={styles.input} defaultValue={todayDate} />
+      <input type="date" name={id} id={id} className={styles.input+" "+styles.pointer} defaultValue={todayDate} />
     </div>
   );
 };
@@ -68,7 +68,7 @@ export const InputDate = ({ id, label }: { id: string; label: string }) => {
 export const InputCheckbox = ({ id, label }: { id: string; label: string }) => {
   return (
     <div className={styles.container}>
-      <input type="checkbox" name={id} id={id} />
+      <input type="checkbox" className={styles.pointer} name={id} id={id} />
       <label htmlFor={id} className={styles.labelCheckbox}>{label}</label>
     </div>
   );

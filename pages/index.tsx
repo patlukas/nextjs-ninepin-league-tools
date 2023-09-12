@@ -100,11 +100,6 @@ export default function Home({ fonts }: { fonts: string[] }) {
       <div className={styles.columnContainer}>
         <Section title="Główne ustawienia" className={styles.column}>
           <DropdownList
-            id="fontDropdown"
-            label="Czcionka:"
-            options={fontOptions}
-          />
-          <DropdownList
             id="typeDropdown"
             label="Rodzaj rozgrywek:"
             options={typeOptions}
@@ -122,6 +117,11 @@ export default function Home({ fonts }: { fonts: string[] }) {
             defaultValue="KS Start Gostyń"
           />
           <InputDate id="dateInput" label="Data:" />
+          <DropdownList
+            id="fontDropdown"
+            label="Czcionka:"
+            options={fontOptions}
+          />
           <InputCheckbox
             id="secondRegistration"
             label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"

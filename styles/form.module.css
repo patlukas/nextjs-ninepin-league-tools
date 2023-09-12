@@ -12,11 +12,16 @@
 }
 
 .labelCheckbox {
+  cursor: pointer;
     margin-left: 5px;
 }
 
 .input {
     width: 100%;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 .btn {
