@@ -7,6 +7,7 @@ import { getListPlayers, onListPlayerFilterSM } from "@/utils/getPlayers";
 import TableSheet from "@/components/TableSheet";
 import Navigate from "@/components/Navigate";
 import Alert from "@/src/Alert";
+import Head from "next/head";
 
 type PlayerInfo = {
   name: string;
@@ -59,47 +60,52 @@ export default function Uep() {
   };
 
   return (
-    <div className={styles.container}>
-      <Title title="Uzupełnianie Elektronicznego Protokołu" />
-      <Navigate />
-      <Section title="Ustawienia" className={styles.typeContainer}>
-        <DropdownList
-          label="Rodzaj rozgrywek"
-          id="typeDropdown"
-          className="typeDropdown"
-          options={typeOptions}
-          onChange={onChangeType}
+    <>
+      <Head>
+        <title>Uzupełnainie Elektronicznego Protokołu</title>
+      </Head>
+      <div className={styles.container}>
+        <Title title="Uzupełnianie Elektronicznego Protokołu" />
+        <Navigate />
+        <Section title="Ustawienia" className={styles.typeContainer}>
+          <DropdownList
+            label="Rodzaj rozgrywek"
+            id="typeDropdown"
+            className="typeDropdown"
+            options={typeOptions}
+            onChange={onChangeType}
+          />
+        </Section>
+        <div className={styles.columnContainer}>
+          <Section title="Gospodarze" className={styles.column}>
+            <UepForm
+              key={typeIndex}
+              playersByClub={playersByClub}
+              defaultClub="KS Start Gostyń"
+              className="players_home"
+              cell="A15"
+              afterCopy={afterCopy}
+              {...typeOptions[typeIndex]}
+            />
+          </Section>
+          <Section title="Goście" className={styles.column}>
+            <UepForm
+              key={typeIndex}
+              playersByClub={playersByClub}
+              className="players_guest"
+              cell="P15"
+              afterCopy={afterCopy}
+              {...typeOptions[typeIndex]}
+            />
+          </Section>
+        </div>
+        <Alert
+          text="Skopiowano"
+          show={showCopyAlert}
+          onClick={() => setShowCopyAlert(false)}
         />
-      </Section>
-      <div className={styles.columnContainer}>
-        <Section title="Gospodarze" className={styles.column}>
-          <UepForm
-            key={typeIndex}
-            playersByClub={playersByClub}
-            defaultClub="KS Start Gostyń"
-            className="players_home"
-            cell="A15"
-            afterCopy={afterCopy}
-            {...typeOptions[typeIndex]}
-          />
-        </Section>
-        <Section title="Goście" className={styles.column}>
-          <UepForm
-            key={typeIndex}
-            playersByClub={playersByClub}
-            className="players_guest"
-            cell="P15"
-            afterCopy={afterCopy}
-            {...typeOptions[typeIndex]}
-          />
-        </Section>
       </div>
-      <Alert
-        text="Skopiowano"
-        show={showCopyAlert}
-        onClick={() => setShowCopyAlert(false)}
-      />
-    </div>
+    </>
   );
 }
 
@@ -142,7 +148,7 @@ const onGetPlayersByClub = async ({
       playersByClub["KS Start Gostyń"]
     );
   }
-  console.log(playersByClub)
+  console.log(playersByClub);
   return playersByClub;
 };
 

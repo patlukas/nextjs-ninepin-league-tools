@@ -15,6 +15,7 @@ import { getListPlayers, onListPlayerFilterSM } from "@/utils/getPlayers";
 import Title from "@/components/Title";
 import Section from "@/components/Section";
 import Navigate from "@/components/Navigate";
+import Head from "next/head";
 
 const SCALE = 842 / 1169;
 
@@ -94,56 +95,64 @@ export default function Home({ fonts }: { fonts: string[] }) {
   };
 
   return (
-    <div className={styles.container}>
-      <Title title={"Drukowanie Dokumentów Meczowych"} />
-      <Navigate />
-      <div className={styles.columnContainer}>
-        <Section title="Główne ustawienia" className={styles.column}>
-          <DropdownList
-            id="typeDropdown"
-            label="Rodzaj rozgrywek:"
-            options={typeOptions}
-            onChange={onChangeTypeIndex}
-          />
-          <InputText
-            key={typeIndex}
-            id="nameInput"
-            label="Nazwa meczu:"
-            defaultValue={typeOptions[typeIndex].name}
-          />
-          <InputText
-            id="clubInput"
-            label="Klub:"
-            defaultValue="KS Start Gostyń"
-          />
-          <InputDate id="dateInput" label="Data:" />
-          <DropdownList
-            id="fontDropdown"
-            label="Czcionka:"
-            options={fontOptions}
-          />
-          <InputCheckbox
-            id="secondRegistration"
-            label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
-          />
-          <div className={styles.containerBtn}>
-            <InputButton
-              id="btn2"
-              label="Zapisz"
-              onClick={() => onDownload(listPlayers)}
+    <>
+      <Head>
+        <title>Drukowanie Dokumentów Meczowych</title>
+      </Head>
+      <div className={styles.container}>
+        <Title title={"Drukowanie Dokumentów Meczowych"} />
+        <Navigate />
+        <div className={styles.columnContainer}>
+          <Section title="Główne ustawienia" className={styles.column}>
+            <DropdownList
+              id="typeDropdown"
+              label="Rodzaj rozgrywek:"
+              options={typeOptions}
+              onChange={onChangeTypeIndex}
             />
-            <InputButton
-              id="btn1"
-              label="Drukuj"
-              onClick={() => onPrint(listPlayers)}
+            <InputText
+              key={typeIndex}
+              id="nameInput"
+              label="Nazwa meczu:"
+              defaultValue={typeOptions[typeIndex].name}
             />
-          </div>
-        </Section>
-        <Section title="Skład drużyny" className={styles.column}>
-          <PlayersList listPlayers={listPlayers} {...typeOptions[typeIndex]} />
-        </Section>
+            <InputText
+              id="clubInput"
+              label="Klub:"
+              defaultValue="KS Start Gostyń"
+            />
+            <InputDate id="dateInput" label="Data:" />
+            <DropdownList
+              id="fontDropdown"
+              label="Czcionka:"
+              options={fontOptions}
+            />
+            <InputCheckbox
+              id="secondRegistration"
+              label="Drugi egzemplarz 'Zgłoszenie drużyny do meczu'"
+            />
+            <div className={styles.containerBtn}>
+              <InputButton
+                id="btn2"
+                label="Zapisz"
+                onClick={() => onDownload(listPlayers)}
+              />
+              <InputButton
+                id="btn1"
+                label="Drukuj"
+                onClick={() => onPrint(listPlayers)}
+              />
+            </div>
+          </Section>
+          <Section title="Skład drużyny" className={styles.column}>
+            <PlayersList
+              listPlayers={listPlayers}
+              {...typeOptions[typeIndex]}
+            />
+          </Section>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -339,7 +348,7 @@ const onReadDataFromForm = (listPlayers: DropdownPlayers[]): FormData => {
 const onCheckDuplicatePlayer = (_: number) => {
   const listSelectPlayers =
     document.querySelectorAll<HTMLSelectElement>(".selectingPlayers");
-  let selectedPlayers: {[key: number]: number[]} = {};
+  let selectedPlayers: { [key: number]: number[] } = {};
   listSelectPlayers.forEach((el: HTMLSelectElement, index: number) => {
     el.classList.remove(styles.duplicatePlayer);
     const selected = el.selectedIndex;
