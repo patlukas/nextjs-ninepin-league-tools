@@ -39,6 +39,8 @@ export const onListPlayerFilterSM = (players: Filter[]): Filter[] => {
   const expectedPlayers = [
     "Dominik Dutkiewicz",
     "Włodzimierz Dutkiewicz",
+    "Michał Bonk",
+    "Mikołaj Hajnsz",
     "Patryk Lukaszewski",
     "Jędrzej Michalak",
     "Jakub Osiewicz",
@@ -47,9 +49,11 @@ export const onListPlayerFilterSM = (players: Filter[]): Filter[] => {
     "Andrzej Zagata",
     "Bogusław Zagata",
     "Krzysztof Zagata",
-    "Szymon Banaszak"
+    "Szymon Banaszak",
+    "Jakub Klimański"
   ]
   let playersResult: Filter[] = [];
+  if(players === undefined) return[];
   players.forEach(player => {
     if(player.name == "" || expectedPlayers.includes(player.name)) {
       playersResult.push(player)

@@ -33,7 +33,6 @@ export default function TableSheet({
       <table className={styles.table + " " + className}>
         <tbody>{rows}</tbody>
       </table>
-      <p>ss</p>
     </div>
   );
 }
@@ -75,9 +74,7 @@ const PlayerRows = ({
       </tr>
       <tr>
         <td className={styles.detailsCell}>{player.value}</td>
-        <td className={styles.detailsCell} colSpan={3}>
-          —
-        </td>
+        <td className={styles.detailsCell} colSpan={3}></td>
       </tr>
     </>
   );
@@ -87,7 +84,7 @@ const RowsToReserved = () => {
   const rows = (
     <>
       <tr>
-        <td className={styles.detailsCell} colSpan={4}></td>
+        <td className={styles.playerCell} colSpan={4}></td>
       </tr>
       <tr>
         <td className={styles.detailsCell}></td>

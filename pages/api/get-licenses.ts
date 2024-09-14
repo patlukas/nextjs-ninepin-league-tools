@@ -70,8 +70,8 @@ const getAllLicenses = async (): Promise<License[]> => {
       secondName,
       club: cells[4].trim(),
       ageCategory: cells[5].trim(),
-      validLicense: cells[11].trim().toUpperCase() == "TAK",
-      loanedClub: cells[12].trim(),
+      validLicense: cells[12].trim().toUpperCase() == "TAK",
+      loanedClub: cells[13].trim(),
     });
   });
   return listLicenses;

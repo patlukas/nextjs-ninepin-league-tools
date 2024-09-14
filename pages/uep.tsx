@@ -143,12 +143,13 @@ const onGetPlayersByClub = async ({
       return a.label.localeCompare(b.label);
     });
   });
+  console.log(playersByClub);
   if (onListPlayerFilter) {
     playersByClub["KS Start Gostyń"] = onListPlayerFilter(
       playersByClub["KS Start Gostyń"]
     );
   }
-  console.log(playersByClub);
+  
   return playersByClub;
 };
 
@@ -309,6 +310,22 @@ const getTypeOptions = (): TypeOption[] => {
       ageCategory: ["Junior młodszy", "Junior", "Mężczyzna"],
       possibleLoan: true,
       onListPlayerFilter: onListPlayerFilterSM,
+    },
+    {
+      value: "sk",
+      label: "Superliga Kobiet",
+      numberOfPlayersPlaying: 6,
+      numberOfReservePlayers: 4,
+      ageCategory: ["Juniorka młodsza", "Juniorka", "Kobieta"],
+      possibleLoan: true,
+    },
+    {
+      value: "2liga",
+      label: "2 Liga",
+      numberOfPlayersPlaying: 4,
+      numberOfReservePlayers: 3,
+      ageCategory: ["Juniorka młodsza", "Juniorka", "Kobieta", "Junior młodszy", "Junior", "Mężczyzna"],
+      possibleLoan: false,
     },
     {
       value: "clm",
