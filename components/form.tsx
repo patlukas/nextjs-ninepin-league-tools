@@ -18,6 +18,56 @@ export const InputText = ({
   );
 };
 
+export const InputTextArea = ({
+  id,
+  label,
+  onChange,
+  defaultValue,
+  rows=2,
+}: {
+  id: string;
+  label: string;
+  onChange: (value: string) => void
+  defaultValue?: string;
+  rows?: number
+}) => {
+  if (defaultValue === undefined) defaultValue = "";
+  return (
+    <div className={styles.container}>
+      <label htmlFor={id} className={styles.label}>{label}</label>
+      <textarea name={id} id={id} defaultValue={defaultValue} className={styles.input} rows={rows} onChange={(e) => onChange(e.target.value)}/>
+    </div>
+  );
+};
+
+InputTextArea.defaultProps = {
+  onChange: (_: number) => {},
+};
+
+export const InputNumber = ({
+  id,
+  label,
+  step,
+  min,
+  max,
+  defaultValue,
+}: {
+  id: string;
+  label: string;
+  step?: number;
+  min?: number;
+  max?: number;
+  defaultValue?: string;
+}) => {
+  if (defaultValue === undefined) defaultValue = "";
+  return (
+    <div className={styles.container}>
+      <label htmlFor={id} className={styles.label}>{label}</label>
+      <input type="number" step={step} min={min} max={max} name={id} id={id} defaultValue={defaultValue} className={styles.input}/>
+    </div>
+  );
+};
+
 export const DropdownList = ({
   id,
   className,
@@ -63,6 +113,40 @@ export const InputDate = ({ id, label }: { id: string; label: string }) => {
       <input type="date" name={id} id={id} className={styles.input+" "+styles.pointer} defaultValue={todayDate} />
     </div>
   );
+};
+
+export const InputDatetime = ({ id, label, onChange }: { id: string; label: string, onChange: (datetime: string) => void; }) => {
+  const today = new Date();
+  today.setHours(12, 0, 0, 0); 
+
+  const formatDateTimeLocal = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  const todayDate = formatDateTimeLocal(today);
+  
+  return (
+    <div className={styles.container}>
+      <label htmlFor={id} className={styles.label}>{label}</label>
+      <input 
+        type="datetime-local" 
+        name={id} 
+        id={id} 
+        className={styles.input+" "+styles.pointer} 
+        defaultValue={todayDate} 
+        onChange={(e) => onChange(e.target.value)}/>
+    </div>
+  );
+};
+
+InputDatetime.defaultProps = {
+  onChange: (_: number) => {},
 };
 
 export const InputCheckbox = ({ id, label }: { id: string; label: string }) => {

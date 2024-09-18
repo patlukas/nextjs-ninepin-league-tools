@@ -13,11 +13,13 @@
     "@types/node": "20.5.1",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
+    "canvas": "^2.11.2",
     "next": "13.4.19",
     "pdf-lib": "^1.17.1",
     "print-js": "^1.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "sharp": "^0.33.5",
     "typescript": "5.1.6"
   }
 }

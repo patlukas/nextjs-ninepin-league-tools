@@ -1,0 +1,26 @@
+[
+    {
+        "value": "gostyn",
+        "label": "Kręgielnia w Gostyniu"
+    },
+    {
+        "value": "tomaszow",
+        "label": "Kręgielnia w Tomaszowie Mazowieckim"
+    },
+    {
+        "value": "poznan",
+        "label": "Kręgielnia w Poznaniu"
+    },
+    {
+        "value": "tarnowo",
+        "label": "Kręgielnia w Tarnowie Podgórnym"
+    },
+    {
+        "value": "sierakow",
+        "label": "Kręgielnia w Sierakowie"
+    },
+    {
+        "value": "pleszew",
+        "label": "Kręgielnia w Pleszewie"
+    }
+]

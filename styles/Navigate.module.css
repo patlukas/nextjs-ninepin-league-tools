@@ -1,6 +1,11 @@
 .container {
   display: flex;
   width: 100%;
+  margin-bottom: 2px;
+}
+
+.containerMain {
+  width: 100%;
   margin-top: 10px;
   margin-bottom: 15px;
 }
@@ -13,6 +18,9 @@
   border-left: 1px dotted #333;
   border-right: 1px dotted #333;
   cursor: pointer;
+  white-space: nowrap;
+  padding-right: 10px;
+  padding-left: 10px;
 }
 
 .option:hover {
