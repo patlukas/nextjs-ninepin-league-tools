@@ -4,16 +4,18 @@ export const InputText = ({
   id,
   label,
   defaultValue,
+  placeholder
 }: {
   id: string;
   label: string;
   defaultValue?: string;
+  placeholder?: string
 }) => {
   if (defaultValue === undefined) defaultValue = "";
   return (
     <div className={styles.container}>
       <label htmlFor={id} className={styles.label}>{label}</label>
-      <input type="text" name={id} id={id} defaultValue={defaultValue} className={styles.input}/>
+      <input type="text" name={id} id={id} defaultValue={defaultValue} className={styles.input} placeholder={placeholder}/>
     </div>
   );
 };
@@ -51,6 +53,7 @@ export const InputNumber = ({
   min,
   max,
   defaultValue,
+  placeholder
 }: {
   id: string;
   label: string;
@@ -58,12 +61,13 @@ export const InputNumber = ({
   min?: number;
   max?: number;
   defaultValue?: string;
+  placeholder?: string
 }) => {
   if (defaultValue === undefined) defaultValue = "";
   return (
     <div className={styles.container}>
       <label htmlFor={id} className={styles.label}>{label}</label>
-      <input type="number" step={step} min={min} max={max} name={id} id={id} defaultValue={defaultValue} className={styles.input}/>
+      <input type="number" step={step} min={min} max={max} name={id} id={id} defaultValue={defaultValue} className={styles.input} placeholder={placeholder}/>
     </div>
   );
 };
@@ -167,3 +171,13 @@ export const InputButton = ({ id, label, onClick }: { id: string; label: string,
         <input type="submit" id={id} value={label} onClick={clickFunction} className={styles.btn} />
     );
   };
+
+export const InputButtonSmall = ({ id, label, onClick }: { id: string; label: string, onClick: () => void }) => {
+    const clickFunction = (event: any) =>{
+      event.preventDefault();
+      onClick();
+    }
+      return (
+          <input type="submit" id={id} value={label} onClick={clickFunction} className={`${styles.btn} ${styles.btn_small}`} />
+      );
+    };

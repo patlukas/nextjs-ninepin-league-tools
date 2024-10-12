@@ -4,7 +4,7 @@
 }
 
 .label {
-    width: 250px;
+    /* width: 350px; */
     display: block;
     padding: 0%;
     font-size: 13px;
@@ -47,6 +47,15 @@
     -webkit-user-select: none;
     touch-action: manipulation;
     vertical-align: middle;
+  }
+
+  .btn_small {
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 12px;
+    min-height: 25px;
+    padding: 4px 6px;
   }
   
   .btn:hover,

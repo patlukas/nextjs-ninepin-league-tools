@@ -1,11 +1,22 @@
+@media (min-width: 650px) {
+  .container {
+    display: flex;
+    margin-bottom: 2px;
+  }
+}
+
+@media (max-width: 650px) {
+  .option {
+    border-bottom: 1px dotted #333;
+  }
+}
+
 .container {
-  display: flex;
   width: 100%;
-  margin-bottom: 2px;
 }
 
 .containerMain {
-  width: 100%;
+  max-width: 100%;
   margin-top: 10px;
   margin-bottom: 15px;
 }

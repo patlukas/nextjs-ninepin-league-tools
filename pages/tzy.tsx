@@ -6,19 +6,11 @@ import Navigate from "@/components/Navigate";
 import Section from "@/components/Section";
 import { DropdownList, InputButton, InputTextArea, InputDatetime } from "@/components/form";
 import { promises as fs } from 'fs';
+import ImageDownloadAndWait from "@/components/ImageDownloadAndWait";
 
 type DropdownOption = {
     value: string;
     label: string;
-};
-
-type AnnouncementSettings = {
-    title: string;
-    type: string;
-    datetime: string;
-    list_value: string[];
-    list_name: string[];
-    dayOfWeek: string;
 };
 
 export const getStaticProps = async () => {
@@ -35,7 +27,7 @@ export const getStaticProps = async () => {
 
 export default function Tzm({ teamOptions }: { teamOptions: DropdownOption[], placeOptions: DropdownOption[] }) {
 
-    const [imageSrc, setImageSrc] = useState<string | null>(null);
+    const [imageSrc, setImageSrc] = useState<string | null | undefined>(null);
 
     const typeOptions: DropdownOption[] = getTypeOptions();
     
@@ -52,17 +44,20 @@ export default function Tzm({ teamOptions }: { teamOptions: DropdownOption[], pl
                     typeOptions={typeOptions}
                     teamOptions={teamOptions}
                 />
-                <InputButton
-                    id="btn"
-                    label="Stwórz obraz"
-                    onClick={() => {
-                        onCreateImage(
-                            setImageSrc, 
-                            typeOptions
-                        );
-                    }}
+                <ImageDownloadAndWait
+                    showWait={imageSrc === undefined}
+                    showImage={imageSrc != undefined && imageSrc !== null}
+                    imageSrc={imageSrc}
+                    type={"TZY"}
+                    onCreateImage={
+                        () => {
+                            onCreateImage(
+                                setImageSrc, 
+                                typeOptions
+                            );
+                        }
+                    }
                 />
-                {imageSrc && <img src={imageSrc} alt="Połączony obraz" width="600" />}
             </div>
         </>
     )
@@ -143,9 +138,11 @@ const Team = ({
 
 
 const onCreateImage = async (
-    setImageSrc: React.Dispatch<React.SetStateAction<string | null>>, 
+    setImageSrc: React.Dispatch<React.SetStateAction<string | null | undefined>>, 
     typeOptions: DropdownOption[]
 ) => {
+    setImageSrc(undefined);
+
     const typeIndex = document.querySelector<HTMLSelectElement>(`#_0_typeDropdown`)?.selectedIndex ?? 0;
     const datetime = document.querySelector<HTMLSelectElement>(`#_0_datetimeInput`)?.value ?? "";
     let list_value = ["", ""]

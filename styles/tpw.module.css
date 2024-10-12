@@ -27,3 +27,40 @@
     padding-right: 15px;
     min-width: 300px;
   }
+
+.columnSmall {
+    float: left;
+    padding-left: 2px;
+    padding-right: 2px;
+    width: 65px;
+}
+
+.columnPD {
+    float: left;
+    padding-left: 2px;
+    padding-right: 2px;
+    width: 65px;
+    margin-top: 50px;
+}
+
+.columnContainerSmall {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.clear {
+    clear:both;
+}
+
+.typeContainer {
+    margin-bottom: 10px;
+}
+
+.typeContainerBig {
+    max-width: 100%;
+    width: 500px;
+}
+
+.dropdown_option_now_exists {
+    background-color: red;
+}

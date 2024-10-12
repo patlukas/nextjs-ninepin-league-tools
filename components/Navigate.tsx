@@ -21,17 +21,17 @@ export default function Navigate() {
       </div>
       <div className={styles.container}>
         <Button
-          title="Twrzenie Zapowiedzi Meczu"
+          title="Tworzenie Zapowiedzi Meczu"
           onClick={() => router.push("/tzm")}
           className={styles.option}
         />
         <Button
-          title="Twrzenie Zapowiedzi YT"
+          title="Tworzenie Zapowiedzi YT"
           onClick={() => router.push("/tzy")}
           className={styles.option}
         />
         <Button
-          title="Twrzenie Postu z Wynikami"
+          title="Tworzenie Postu z Wynikami"
           onClick={() => router.push("/tpw")}
           className={styles.option}
         />

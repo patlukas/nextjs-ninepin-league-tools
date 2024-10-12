@@ -4,11 +4,12 @@ import { createCanvas, loadImage, CanvasRenderingContext2D } from 'canvas';
 import {drawText, addCentredHorizontalImage, drawText_left, drawText_right, drawMultilineCentredText} from '@/utils/canvaMethods'
 import tpw_createBackground from '@/utils/tpwMethods';
 
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
-
+    console.log(process.env.API_KEY)
     const { 
         list_value, 
         title, 
@@ -18,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         type,
         list_pd,
         list_ps,
-        list_sum
+        list_sum,
     }: {
         list_value: string[],
         title: string,
@@ -32,7 +33,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } = req.body;
 
     const list_x = [300, 900]
-
     try {
         const image: Buffer | undefined = await tpw_createBackground(list_value, title, date, round)
         if(image === undefined) {
@@ -76,7 +76,7 @@ const drawTeamResult = async (
 
     await addCentredHorizontalImage(ctx, crestPath, 415, x, 185)
 
-    drawMultilineCentredText(ctx, name, x, 640, 56, 1.05, false, "bold")
+    drawMultilineCentredText(ctx, name, x, 640, 60, 1.05, false, "bold")
     drawMultilineCentredText(ctx, pd, x, 895, 100, 0.8, true, "bold")
     drawMultilineCentredText(ctx, ps, x, 1035, 90, 0.8)
     drawMultilineCentredText(ctx, sum, x, 1175, 90, 0.8)
@@ -91,10 +91,10 @@ const drawConstObject = async (
 ) => {
     const vsPath = path.join(process.cwd(), 'public', 'vs', `${type}.png`);
 
-    drawText(ctx, title, 600, 60, "bold", 95)
-    drawText(ctx, "|", 600, 150)
-    drawText_right(ctx, round, 575, 150)
-    drawText_left(ctx, date, 625, 150)
+    // drawText(ctx, title, 600, 60, "bold", 95)
+    // drawText(ctx, "|", 600, 150)
+    // drawText_right(ctx, round, 575, 150)
+    // drawText_left(ctx, date, 625, 150)
 
     await addCentredHorizontalImage(ctx, vsPath, 250, 600, 270)
 

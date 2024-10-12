@@ -51,9 +51,9 @@ const drawConstObject = async (
     round: string,
     date: string
 ) => {
-    drawText(ctx, title, 600, 60, "bold", 95)
-    drawText(ctx, "|", 600, 150)
-    drawText_right(ctx, round, 575, 150)
-    drawText_left(ctx, date, 625, 150)
+    drawText(ctx, title, 600, 60, "bold", 90)
+    drawText(ctx, "|", 600, 140, "", 50)
+    drawText_right(ctx, round, 575, 140, "", 50)
+    drawText_left(ctx, date, 625, 140, "", 50)
 }
 

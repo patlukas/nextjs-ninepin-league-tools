@@ -107,3 +107,10 @@ a {
   }
 }
 
+@font-face {
+  font-family: 'MyFont';
+  src: url('/fonts/_Pixelowa.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+

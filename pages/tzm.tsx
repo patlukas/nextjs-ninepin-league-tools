@@ -4,8 +4,9 @@ import Head from "next/head";
 import styles from "@/styles/tpw.module.css";
 import Navigate from "@/components/Navigate";
 import Section from "@/components/Section";
-import { DropdownList, InputButton, InputTextArea, InputDatetime } from "@/components/form";
+import { DropdownList, InputTextArea, InputDatetime } from "@/components/form";
 import { promises as fs } from 'fs';
+import ImageDownloadAndWait from "@/components/ImageDownloadAndWait";
 
 type DropdownOption = {
     value: string;
@@ -46,7 +47,7 @@ export const getStaticProps = async () => {
 export default function Tzm({ teamOptions, placeOptions }: { teamOptions: DropdownOption[], placeOptions: DropdownOption[] }) {
 
     const [numberImages, setNumberImages] = useState<number>(1);
-    const [imageSrc, setImageSrc] = useState<string | null>(null);
+    const [imageSrc, setImageSrc] = useState<string | null | undefined>(null);
 
     const numberOptions: DropdownOptionNumber[] = getNumberOptions();
     const typeOptions: DropdownOption[] = getTypeOptions();
@@ -78,18 +79,21 @@ export default function Tzm({ teamOptions, placeOptions }: { teamOptions: Dropdo
                         teamOptions={teamOptions}
                     />
                 ))}
-                <InputButton
-                    id="btn"
-                    label="Stwórz obraz"
-                    onClick={() => {
-                        onCreateImage(
-                            setImageSrc, 
-                            numberImages,
-                            typeOptions
-                        );
-                    }}
+                <ImageDownloadAndWait
+                    showWait={imageSrc === undefined}
+                    showImage={imageSrc != undefined && imageSrc !== null}
+                    imageSrc={imageSrc}
+                    type={"TZM"}
+                    onCreateImage={
+                        () => {
+                            onCreateImage(
+                                setImageSrc, 
+                                numberImages,
+                                typeOptions
+                            )
+                        }
+                    }
                 />
-                {imageSrc && <img src={imageSrc} alt="Połączony obraz" width="600" />}
             </div>
         </>
     )
@@ -177,10 +181,11 @@ const Team = ({
 
 
 const onCreateImage = async (
-    setImageSrc: React.Dispatch<React.SetStateAction<string | null>>, 
+    setImageSrc: React.Dispatch<React.SetStateAction<string | null | undefined>>, 
     numberImages: number,
     typeOptions: DropdownOption[]
 ) => {
+    setImageSrc(undefined);
     let list_announcementSettings: AnnouncementSettings[] = []
 
     for(let i=0; i<numberImages; i++) {
