@@ -123,7 +123,7 @@ const drawSpecialText = (
     fontSize: number
 ) => {
     const value = parseFloat(text)
-    const fillStyle = value < threshold1 ? "#fff" : value < threshold2 ? "#ff0" : value < threshold3 ? "#0ff" : "#a00"
+    const fillStyle = value < threshold1 ? "#fff" : value < threshold2 ? "#ff0" : value < threshold3 ? "#0ff" : "#f0f"
     drawText(ctx, text, x, y, option, fontSize, "center", fillStyle)
 }
 
