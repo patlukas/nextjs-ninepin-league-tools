@@ -4,6 +4,10 @@
         "label": "Kręgielnia w Gostyniu"
     },
     {
+        "value": "leszno",
+        "label": "Kręgielnia w Lesznie"
+    },
+    {
         "value": "tomaszow",
         "label": "Kręgielnia w Tomaszowie Mazowieckim"
     },
@@ -22,5 +26,9 @@
     {
         "value": "pleszew",
         "label": "Kręgielnia w Pleszewie"
+    },
+    {
+        "value": "tuchola",
+        "label": "Kręgielnia w Tucholi"
     }
 ]

@@ -456,7 +456,7 @@ const getLeaguePointsOptions = (maxPoints: number): DropdownOptionLeague[] => {
 };
 
 const getRoundOptions = (): DropdownOption[] => {
-    const list = ["I", "II", "III", "IV", "V", "VI", "VII", "VII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
+    const list = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
     let returnList: DropdownOption[] = []
     list.forEach(l => {
         returnList.push({

@@ -32,7 +32,15 @@
         "label": "KS Alfa-Vector\nTarnowo Podgórne"
     },
     {
-        "value": "wronki",
+        "value": "wronki_amica",
         "label": "KK Dziewiątka-Amica\nWronki"
+    },
+    {
+        "value": "wronki",
+        "label": "KK Dziewiątka\nWronki"
+    },
+    {
+        "value": "laziska",
+        "label": " KS Polonia\nŁaziska Górne"
     }
 ]
