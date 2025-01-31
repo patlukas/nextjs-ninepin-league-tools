@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import styles from "@/styles/alert.module.css";
 
 export default function Alert({

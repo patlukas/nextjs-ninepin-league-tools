@@ -6,7 +6,9 @@ import {drawText, addCentredHorizontalImage, drawMultilineCentredText} from '@/u
 type CreateAnnouncement = {
     list_value: string[],
     title: string,
-    datetime: string,
+    title_abbreviation: string;
+    date: string,
+    time: string,
     list_name: string[],
     type: string,
     dayOfWeek: string
@@ -19,8 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { announcementSettings}: {announcementSettings: CreateAnnouncement} = req.body;
 
-    const {list_value, title, datetime, list_name, type, dayOfWeek} = announcementSettings
+    const {list_value, title, title_abbreviation, date, time, list_name, type, dayOfWeek} = announcementSettings
 
+    const datetime = date + " " + time
     const list_x = [480, 1440]
     try {
         const canvas = createCanvas(1920, 1080);
@@ -37,9 +40,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         const finalImageBuffer = canvas.toBuffer('image/png');
+        const finalImageBase64 = finalImageBuffer.toString('base64');
 
-        res.setHeader('Content-Type', 'image/png');
-        res.send(finalImageBuffer);
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send({
+            image: `data:image/png;base64,${finalImageBase64}`,
+            title: getTitle(title_abbreviation, list_name[0], list_name[1], date),
+            hashtags: getHashtags(title, title_abbreviation, list_name[0], list_name[1])
+        });
     } catch (error) {
         console.error('Error processing images:', error);
         res.status(500).json({ error: 'Error processing images' });
@@ -72,4 +81,40 @@ const drawConstObject = async (
     drawText(ctx, `${dayOfWeek}, ${datetime}`, 960, 1040, "", 70)
 
     await addCentredHorizontalImage(ctx, vsPath, 500, 960, 240)
+}
+
+const getTitle = (
+    title_abbreviation: string, 
+    name_0: string, 
+    name_1: string, 
+    date: string
+) => {
+    name_0 = name_0.replaceAll("\n", " ")
+    name_1 = name_1.replaceAll("\n", " ")
+    return `${title_abbreviation} | ${name_0} vs ${name_1} | ${date}`
+}
+
+const getHashtags = (
+    title: string,
+    title_abbreviation: string, 
+    name_0: string, 
+    name_1: string
+) => {
+    name_0 = name_0.replaceAll("\n", " ")
+    name_1 = name_1.replaceAll("\n", " ")
+    let group_0 = `${title},${title_abbreviation},${name_0},${name_1}`
+    let group_1 = group_0.replaceAll(" ", ",")
+    let group_2 = `${name_0.substring(name_0.indexOf(" ")+1)},${name_1.substring(name_1.indexOf(" ")+1)}`
+    let group_012 = `${group_0},${group_1},${group_2}`
+    let group_3 = group_012.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    let group_0123 = `${group_012},${group_3}`.split(",")
+    let unique_hashtags_list = group_0123.filter((value, index, array) => array.indexOf(value) === index);
+    let unique_hashtags_string = unique_hashtags_list.join(", ")
+
+    return `
+    Kręgle klasyczne, Nine-pin bowling, Ninepin Bowling Classic, 
+    Kegeln,Кегельбан, Keglscheim, Keglespil, Kegloludo, Teke, Kuželky, 
+    KręgleKlasyczne, ClassicBowling, BowlingSport, NinepinBowling, KegelnSport, 
+    LiveSport, KegelnLive, SportNaŻywo, 
+    ${unique_hashtags_string}`    
 }

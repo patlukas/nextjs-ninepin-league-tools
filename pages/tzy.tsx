@@ -4,13 +4,17 @@ import Head from "next/head";
 import styles from "@/styles/tpw.module.css";
 import Navigate from "@/components/Navigate";
 import Section from "@/components/Section";
-import { DropdownList, InputButton, InputTextArea, InputDatetime } from "@/components/form";
+import { DropdownList, InputTextArea, InputDatetime } from "@/components/form";
 import { promises as fs } from 'fs';
 import ImageDownloadAndWait from "@/components/ImageDownloadAndWait";
+import TextWithCopyBtn from "@/components/TextWithCopyBtn";
+import Alert from "@/src/Alert";
+
 
 type DropdownOption = {
     value: string;
     label: string;
+    abbreviation: string;
 };
 
 export const getStaticProps = async () => {
@@ -28,8 +32,20 @@ export const getStaticProps = async () => {
 export default function Tzm({ teamOptions }: { teamOptions: DropdownOption[], placeOptions: DropdownOption[] }) {
 
     const [imageSrc, setImageSrc] = useState<string | null | undefined>(null);
+    const [txtViveTitle, setTxtVideoTitle] = useState<string | null>(null);
+    const [txtVideoHashtags, setTxtVideoHashtags] = useState<string | null>(null);
+    const [showCopyAlert, setShowCopyAlert] = useState<boolean>(false);
 
     const typeOptions: DropdownOption[] = getTypeOptions();
+
+    const afterCopy = async () => {
+        if (showCopyAlert) {
+          setShowCopyAlert(false);
+          await new Promise((r) => setTimeout(r, 150));
+        }
+        setShowCopyAlert(true);
+        setTimeout(() => setShowCopyAlert(false), 4000);
+      };
     
     return (
         <>
@@ -53,10 +69,27 @@ export default function Tzm({ teamOptions }: { teamOptions: DropdownOption[], pl
                         () => {
                             onCreateImage(
                                 setImageSrc, 
+                                setTxtVideoTitle, 
+                                setTxtVideoHashtags, 
                                 typeOptions
                             );
                         }
                     }
+                />
+                <TextWithCopyBtn 
+                    labelBtn="Kopiuj tytuł"
+                    value={txtViveTitle}
+                    afterCopy={afterCopy}
+                />
+                <TextWithCopyBtn 
+                    labelBtn="Kopiuj hasztagi"
+                    value={txtVideoHashtags}
+                    afterCopy={afterCopy}
+                />
+                <Alert
+                    text="Skopiowano"
+                    show={showCopyAlert}
+                    onClick={() => setShowCopyAlert(false)}
                 />
             </div>
         </>
@@ -139,9 +172,13 @@ const Team = ({
 
 const onCreateImage = async (
     setImageSrc: React.Dispatch<React.SetStateAction<string | null | undefined>>, 
+    setTxtVideoTitle: React.Dispatch<React.SetStateAction<string | null>>, 
+    setTxtVideoHashtags: React.Dispatch<React.SetStateAction<string | null>>, 
     typeOptions: DropdownOption[]
 ) => {
     setImageSrc(undefined);
+    setTxtVideoTitle(null);
+    setTxtVideoHashtags(null);
 
     const typeIndex = document.querySelector<HTMLSelectElement>(`#_0_typeDropdown`)?.selectedIndex ?? 0;
     const datetime = document.querySelector<HTMLSelectElement>(`#_0_datetimeInput`)?.value ?? "";
@@ -152,10 +189,14 @@ const onCreateImage = async (
         list_name[j] = document.querySelector<HTMLSelectElement>(`#_0_${j}_nameInput`)?.value ?? "";
     }
 
+    const [date_string, time_string] = getDateAndTime(datetime)
+
     const announcementSettings = {
         title: typeOptions[typeIndex].label,
+        title_abbreviation: typeOptions[typeIndex].abbreviation,
         type: typeOptions[typeIndex].value,
-        datetime: changeFormatDate(datetime),
+        date: date_string,
+        time: time_string,
         list_value: list_value,
         list_name: list_name,
         dayOfWeek: date_getDayOfWeek(datetime)
@@ -168,12 +209,13 @@ const onCreateImage = async (
             announcementSettings
         }),
     });
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    setImageSrc(url);
+    const data = await response.json()
+    setTxtVideoTitle(data.title)
+    setTxtVideoHashtags(data.hashtags)
+    setImageSrc(data.image);
 }
 
-const changeFormatDate = (datetimeValue: string) => {
+const getDateAndTime = (datetimeValue: string) => {
     const date = new Date(datetimeValue);
 
     const day = String(date.getDate()).padStart(2, '0');
@@ -182,7 +224,7 @@ const changeFormatDate = (datetimeValue: string) => {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
 
-    return `${day}.${month}.${year} ${hours}:${minutes}`;      
+    return [`${day}.${month}.${year}`, `${hours}:${minutes}`];      
 };
 
 const date_getDayOfWeek = (dateValue: string) => {
@@ -200,19 +242,23 @@ const getTypeOptions = (): DropdownOption[] => {
     return [
         {
             value: "sm",
-            label: "Superliga Mężczyzn"
+            label: "Superliga Mężczyzn",
+            abbreviation: "SM"
         },
         {
             value: "sk",
-            label: "Superliga Kobiet"
+            label: "Superliga Kobiet",
+            abbreviation: "SK"
         },
         {
             value: "2liga",
-            label: "2. Liga"
+            label: "2. Liga",
+            abbreviation: "2L"
         },
         {
             value: "clm",
-            label: "Centralna Liga Młodzieżowa"
+            label: "Centralna Liga Młodzieżowa",
+            abbreviation: "CLM"
         },
     ];
 };
