@@ -209,6 +209,12 @@ const onCreateImage = async (
             announcementSettings
         }),
     });
+    console.log(response)
+    if (!response.ok) {
+        console.error("Błąd API:", response.status, response.statusText);
+        setImageSrc(null);
+        return;
+    }
     const data = await response.json()
     setTxtVideoTitle(data.title)
     setTxtVideoHashtags(data.hashtags)
