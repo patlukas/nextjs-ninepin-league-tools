@@ -94,6 +94,22 @@ const getTitle = (
     return `${title_abbreviation} | ${name_0} vs ${name_1} | ${date}`
 }
 
+const limitHashtagsLEngth = (s: string, maxDlugosc: number = 500) => {
+    let wyrazenia = s.split(",");
+    let wynik = [];
+    let dlugosc = 0;
+
+    for (let wyrazenie of wyrazenia) {
+        if (dlugosc + wyrazenie.length + wynik.length> maxDlugosc) {
+            break;
+        }
+        wynik.push(wyrazenie);
+        dlugosc += wyrazenie.length;
+    }
+    console.log(dlugosc, dlugosc + wynik.length)
+    return wynik.join(",");
+}
+
 const getHashtags = (
     title: string,
     title_abbreviation: string, 
@@ -110,11 +126,12 @@ const getHashtags = (
     let group_0123 = `${group_012},${group_3}`.split(",")
     let unique_hashtags_list = group_0123.filter((value, index, array) => array.indexOf(value) === index);
     let unique_hashtags_string = unique_hashtags_list.join(", ")
-
-    return `
-    Kręgle klasyczne, Nine-pin bowling, Ninepin Bowling Classic, 
+    let hashtags = `Kręgle klasyczne, Nine-pin bowling, Ninepin Bowling Classic, 
     Kegeln,Кегельбан, Keglscheim, Keglespil, Kegloludo, Teke, Kuželky, 
     KręgleKlasyczne, ClassicBowling, BowlingSport, NinepinBowling, KegelnSport, 
     LiveSport, KegelnLive, SportNaŻywo, 
-    ${unique_hashtags_string}`    
+    ${unique_hashtags_string}`
+    hashtags = limitHashtagsLEngth(hashtags, 465)
+
+    return hashtags
 }
