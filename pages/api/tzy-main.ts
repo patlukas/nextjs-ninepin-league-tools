@@ -100,14 +100,16 @@ const limitHashtagsLEngth = (s: string, maxDlugosc: number = 500) => {
     let dlugosc = 0;
 
     for (let wyrazenie of wyrazenia) {
-        if (dlugosc + wyrazenie.length + wynik.length> maxDlugosc) {
+        wyrazenie = wyrazenie.trim()
+        let isSpaces = wyrazenie.split(" ").length - 1 > 0
+        const forSpaces = isSpaces ? 2 : 0
+        if (dlugosc + wyrazenie.length + wynik.length - 1 + forSpaces > maxDlugosc) {
             break;
         }
         wynik.push(wyrazenie);
-        dlugosc += wyrazenie.length;
+        dlugosc += wyrazenie.length + forSpaces;
     }
-    console.log(dlugosc, dlugosc + wynik.length)
-    return wynik.join(",");
+    return wynik.join(", ");
 }
 
 const getHashtags = (
@@ -131,7 +133,7 @@ const getHashtags = (
     KręgleKlasyczne, ClassicBowling, BowlingSport, NinepinBowling, KegelnSport, 
     LiveSport, KegelnLive, SportNaŻywo, 
     ${unique_hashtags_string}`
-    hashtags = limitHashtagsLEngth(hashtags, 465)
+    hashtags = limitHashtagsLEngth(hashtags, 500)
 
     return hashtags
 }
