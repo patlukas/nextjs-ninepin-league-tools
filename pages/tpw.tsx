@@ -512,7 +512,7 @@ const onGetListSheet = async (setListSheet: (_: DropdownOption[]) => void, setGo
         return
     }
     const url = urlEl.value
-
+    
     const response = await fetch('/api/get-list-sheet', {
         method: 'POST',
         headers: {
@@ -524,6 +524,14 @@ const onGetListSheet = async (setListSheet: (_: DropdownOption[]) => void, setGo
         const result_json = await response.json()
         setGoogleSheetTitle(result_json.title)
         setListSheet(result_json.list_sheet)
+    }
+    else {
+        const err = await response.json()
+        let message_pl = ""
+        if (err.status == "FAILED_PRECONDITION") {
+            message_pl = "\n\nMożliwe, że link prowadzi do arkusza zapisanego w formacie \".XLSX\" zamaist w formacie Google Sheet"
+        }
+        alert(`${err.code}: ${err.status}\n${err.message}${message_pl}`)
     }
 }
 

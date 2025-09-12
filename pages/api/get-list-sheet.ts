@@ -1,3 +1,4 @@
+import Alert from '@/src/Alert';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const API_KEY = process.env.API_KEY
@@ -6,6 +7,26 @@ type DropdownOption = {
     value: string;
     label: string;
 };
+
+type ApiError = {
+  error: {
+    code: number;
+    message: string;
+    status: string;
+  };
+};
+
+interface SpreadsheetData {
+            properties: {
+                title: string
+            },
+            sheets: {
+                properties: {
+                    title: string;   // Nazwa arkusza
+                    sheetId: number; // GID arkusza
+                }
+            }[];
+        }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -31,23 +52,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const api_url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${API_KEY}`
 
-        interface SpreadsheetData {
-            properties: {
-                title: string
-            },
-            sheets: {
-                properties: {
-                    title: string;   // Nazwa arkusza
-                    sheetId: number; // GID arkusza
-                }
-            }[];
-        }
+        
 
         console.log(api_url)
 
         await fetch(api_url)
             .then(response => response.json()) 
-            .then((data: SpreadsheetData) => {
+            .then((data: SpreadsheetData | ApiError) => {
+                if("error" in data) {
+                    res.status(data.error.code).json( data.error );
+                    return 
+                }
                 return_obj.title = data.properties.title
                 const sheets = data.sheets;
                 
