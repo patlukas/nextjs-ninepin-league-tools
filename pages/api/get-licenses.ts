@@ -64,14 +64,18 @@ const getAllLicenses = async (): Promise<License[]> => {
       indexLastSpace != -1 ? cells[3].slice(indexLastSpace + 1).trim() : "";
     const secondName =
       indexLastSpace != -1 ? cells[3].slice(0, indexLastSpace).trim() : "";
+    let loanedClub = cells[10]
+    if(loanedClub.includes("-")) {
+      loanedClub = loanedClub.split("-")[1].trim()
+    }
     listLicenses.push({
       license: cells[0].trim(),
       firstName,
       secondName,
       club: cells[4].trim(),
       ageCategory: cells[5].trim(),
-      validLicense: cells[12].trim().toUpperCase() == "TAK",
-      loanedClub: cells[13].trim(),
+      validLicense: cells[9].trim().toUpperCase() == "TAK",
+      loanedClub,
     });
   });
   return listLicenses;

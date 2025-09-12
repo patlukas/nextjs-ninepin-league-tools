@@ -14,7 +14,7 @@
     "@types/node": "20.5.1",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",
-    "canvas": "^2.11.2",
+    "canvas": "^3.2.0",
     "next": "^13.4.19",
     "pdf-lib": "^1.17.1",
     "print-js": "^1.6.0",

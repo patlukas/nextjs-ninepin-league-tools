@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const canvas = createCanvas(1920, 1080);
         const ctx = canvas.getContext('2d');
 
-        const backgroundPath = path.join(process.cwd(), 'public', 'place', `yt_background2.png`);
+        const backgroundPath = path.join(process.cwd(), 'public', 'place', `yt_background.png`);
         const combinedImage = await loadImage(backgroundPath);
         ctx.drawImage(combinedImage, 0, 0);
 

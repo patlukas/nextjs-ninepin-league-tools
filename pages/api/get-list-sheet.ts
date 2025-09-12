@@ -1,4 +1,3 @@
-import Alert from '@/src/Alert';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const API_KEY = process.env.API_KEY
@@ -17,16 +16,16 @@ type ApiError = {
 };
 
 interface SpreadsheetData {
-            properties: {
-                title: string
-            },
-            sheets: {
-                properties: {
-                    title: string;   // Nazwa arkusza
-                    sheetId: number; // GID arkusza
-                }
-            }[];
+    properties: {
+        title: string
+    },
+    sheets: {
+        properties: {
+            title: string;   // Nazwa arkusza
+            sheetId: number; // GID arkusza
         }
+    }[];
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -51,10 +50,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const spreadsheetId = parts[1].split("/")[0];
 
         const api_url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${API_KEY}`
-
-        
-
-        console.log(api_url)
 
         await fetch(api_url)
             .then(response => response.json()) 
