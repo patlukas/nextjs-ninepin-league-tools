@@ -5,6 +5,7 @@ import path from 'path';
 
 const FONTFAMILY = "Trebuchet MS"
 
+registerFont(path.join(process.cwd(), "public", "fonts", "trebuc.ttf"), { family: 'Trebuchet MS' });
 
 export const drawText = (
     ctx: CanvasRenderingContext2D, 
