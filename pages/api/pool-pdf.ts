@@ -16,9 +16,8 @@ type PrintLayoutConfig = {
     size: number[]; 
     single_size: number[], 
     statement_in_row: number; 
-    finalSize: number[], 
-    move: number[], 
-    start: number[] 
+    margin: number[], 
+    space: number[] 
 }
 
 class TooManyElementsError extends Error {
@@ -50,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
 
-    const {size, single_size, statement_in_row, finalSize, move, start} = details;
+    const {size, single_size, statement_in_row, margin, space} = details;
 
     const finalDoc = await PDFDocument.create();
     const page = finalDoc.addPage([size[0], size[1]]);
@@ -84,8 +83,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const embeddedModified = await finalDoc.embedPage(sourcePdfPage);
 
         page.drawPage(embeddedModified, {
-            x:  start[0] + x * move[0],
-            y: page.getSize().height - (start[1] + y * move[1]) - single_size[1],
+            x:  margin[0] + x * (space[0] + single_size[0]),
+            y: page.getSize().height - (margin[1] + y * (space[1] + single_size[1])) - single_size[1],
             width: single_size[0],
             height: single_size[1],
         });
@@ -99,37 +98,82 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const getPrintLayoutConfig = (number_of_statement: number): PrintLayoutConfig => {
-    const maxLayoutStatementOnPage = 9
+    const maxLayoutStatementOnPage = 20
     if (number_of_statement > maxLayoutStatementOnPage) {
         throw new TooManyElementsError(maxLayoutStatementOnPage, number_of_statement);
     }
     const dict_printLayoutConfig: { [key: number]: PrintLayoutConfig } = {
         1: {
-            size: [2970, 2100],
-            single_size: [747, 700],
+            size: [595, 842],
+            single_size: [585, 546],
             statement_in_row: 1,
-            finalSize: [594, 420],
-            start: [10, 10],
-            move: [747, 700]
+            margin: [10, 10],
+            space: [10, 25]
         },
         2: {
-            size: [2970, 2100],
-            single_size: [747, 700],
+            size: [595, 842],
+            single_size: [413, 386],
             statement_in_row: 1,
-            finalSize: [594, 420],
-            start: [10, 10],
-            move: [747, 700]
+            margin: [90, 10],
+            space: [10, 50]
+        },
+        4: {
+            size: [595, 842],
+            single_size: [282, 264],
+            statement_in_row: 2,
+            margin: [10, 10],
+            space: [10, 50]
+        },
+        6: {
+            size: [842, 595],
+            single_size: [267, 250],
+            statement_in_row: 3,
+            margin: [10, 10],
+            space: [10, 50]
+        },
+        8: {
+            size: [842, 595],
+            single_size: [198, 185],
+            statement_in_row: 4,
+            margin: [10, 10],
+            space: [10, 50]
         },
         9: {
             size: [595, 842],
-            single_size: [185, 160],
+            single_size: [185, 173],
             statement_in_row: 3,
-            finalSize: [1260, 1782],
-            start: [10, 10],
-            move: [195, 267]
+            margin: [10, 10],
+            space: [10, 50]
+        },
+        12: {
+            size: [595, 842],
+            single_size: [180, 168],
+            statement_in_row: 3,
+            margin: [10, 10],
+            space: [10, 50]
+        },
+        15: {
+            size: [842, 595],
+            single_size: [156, 146],
+            statement_in_row: 5,
+            margin: [10, 10],
+            space: [10, 50]
+        },
+        16: {
+            size: [595, 842],
+            single_size: [136, 127],
+            statement_in_row: 4,
+            margin: [10, 10],
+            space: [10, 50]
+        }, 
+        20: {
+            size: [595, 842],
+            single_size: [133, 124],
+            statement_in_row: 4,
+            margin: [10, 10],
+            space: [10, 50]
         }
     }
-
     for(let i=number_of_statement; i<=maxLayoutStatementOnPage; i++) {
         if (i in dict_printLayoutConfig) {
             return dict_printLayoutConfig[i]
