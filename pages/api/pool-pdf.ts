@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 const fs = require('fs');
 import path from 'path';
+    import fontkit from "@pdf-lib/fontkit";
+
 
 
 type Statement = {
@@ -58,17 +60,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const templateDoc = await PDFDocument.load(templateBytes);
 
     const tempDoc = await PDFDocument.create();
+    tempDoc.registerFontkit(fontkit);
 
-    const font = await tempDoc.embedFont(StandardFonts.Helvetica);
+    const fontPath = path.join(process.cwd(), 'public', 'fonts', `trebuc.ttf`)
+    const fontBytes = fs.readFileSync(fontPath);
+    const font = await tempDoc.embedFont(fontBytes);
 
     for (const statement of list_statement) {
         const { name, birthday, team, date, place } = statement;
 
         const [tempPage] = await tempDoc.copyPages(templateDoc, [0]);
-        tempPage.drawText(name, {x: 127, y: tempPage.getSize().height - 133, size: 15, font, color: rgb(0, 0, 0),});
+        tempPage.drawText(name, {x: 135, y: tempPage.getSize().height - 133, size: 15, font, color: rgb(0, 0, 0),});
         tempPage.drawText(birthday, {x: 85, y: tempPage.getSize().height - 157, size: 15, font, color: rgb(0, 0, 0),});
         tempPage.drawText(team, {x: 127, y: tempPage.getSize().height - 181, size: 15, font, color: rgb(0, 0, 0),});
-        tempPage.drawText(place + ", " + date, {x: 2, y: tempPage.getSize().height - 298, size: 15, font, color: rgb(0, 0, 0),});
+        tempPage.drawText(place + ", " + date, {x: 2, y: tempPage.getSize().height - 298, size: 12, font, color: rgb(0, 0, 0),});
         tempDoc.addPage(tempPage);
     }
 
