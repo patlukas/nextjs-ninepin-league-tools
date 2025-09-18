@@ -16,6 +16,7 @@ type LicenseReturn = {
   nameReverse: string;
   license: string;
   club: string;
+  clubHome: string;
   ageCategory: string;
 };
 
@@ -35,6 +36,7 @@ export default async function handler(
         nameReverse: el.secondName + " " + el.firstName,
         license: el.license,
         club: el.club,
+        clubHome: el.club,
         ageCategory: el.ageCategory,
       };
       if (possibleLoan && el.loanedClub != "") player.club = el.loanedClub;

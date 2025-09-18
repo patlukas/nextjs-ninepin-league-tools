@@ -3,6 +3,7 @@ type LicenseReturn = {
   nameReverse: string;
   license: string;
   club: string;
+  clubHome: string;
   ageCategory: string;
 }
 
