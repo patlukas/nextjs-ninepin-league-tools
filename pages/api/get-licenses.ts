@@ -7,7 +7,7 @@ type License = {
   secondName: string;
   club: string;
   ageCategory: string;
-  validLicense: string;
+  validLicense: boolean;
   loanedClub: string;
 };
 
@@ -70,7 +70,7 @@ const getAllLicenses = async (): Promise<License[]> => {
     if(loanedClub.includes("-")) {
       loanedClub = loanedClub.split("-")[1].trim()
     }
-    listLicenses.push({
+    const license: License = {
       license: cells[0].trim(),
       firstName,
       secondName,
@@ -78,7 +78,15 @@ const getAllLicenses = async (): Promise<License[]> => {
       ageCategory: cells[5].trim(),
       validLicense: cells[9].trim().toUpperCase() == "TAK",
       loanedClub,
-    });
+    }
+    correctingTypos(license)
+    listLicenses.push(license);
   });
   return listLicenses;
 };
+
+const correctingTypos = (player: License) => {
+  if(player.loanedClub == "Start Gostyń") {
+    player.loanedClub = "KS Start Gostyń"
+  }
+}
