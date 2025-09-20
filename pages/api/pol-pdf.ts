@@ -13,6 +13,7 @@ type ReqBody = {
 }
 
 type Statement = {
+    id?: string;
     name?: string,
     birthday?: string,
     team?: string,
