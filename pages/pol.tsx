@@ -3,6 +3,7 @@ import Section from "@/components/Section";
 import Title from "@/components/Title";
 import { DropdownList, InputButton, InputCheckbox, InputDate, InputText } from "@/components/form";
 import styles from "@/styles/aup.module.css";
+import styleWaiter from "@/styles/other.module.css"
 import { getListPlayers, onListPlayerFilterSM, GP_Filter} from "@/utils/getPlayers";
 // import TableSheet from "@/components/TableSheet";
 import Navigate from "@/components/Navigate";
@@ -48,6 +49,7 @@ export default function Uep() {
   // const [showCopyAlert, setShowCopyAlert] = useState<boolean>(false);
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [club, setClub] = useState<string>("");
+  const [wait, setWait] = useState<boolean>(false);
 
   const typeOptions: TypeOption[] = getTypeOptions();
   const numberOptions: DropdownOptionNumber[] = getNumberOptions();
@@ -174,13 +176,21 @@ export default function Uep() {
           </Section>
         </div>
         <div className={styles.btnContainer}>
-          <InputButton
-            id="btn"
-            label="Otwórz"
-            onClick={() => {
-              prepareDocument({players})
-            }}
-          />
+          {wait ? (
+            <div className={styleWaiter.loader}></div> // pokazuje loader
+          ) : (
+            <InputButton
+              id="btn"
+              label="Otwórz"
+              onClick={() => {
+                setWait(true);
+                prepareDocument({
+                  players,
+                  endFunc: () => setWait(false),
+                });
+              }}
+            />
+          )}
         </div>
         {/* <Alert
           text="Skopiowano"
@@ -193,9 +203,11 @@ export default function Uep() {
 }
 
 const prepareDocument = async ({
-  players
+  players,
+  endFunc
 }: {
-  players: PlayerInfo[]
+  players: PlayerInfo[],
+  endFunc: () => {}
 }) => {
   let date = document.querySelector<HTMLInputElement>("#dateInput")?.value ?? ""
   if (date != "") {
@@ -250,6 +262,7 @@ const prepareDocument = async ({
   .then((blob) => {
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank");
+    endFunc()
   });
 }
 
