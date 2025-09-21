@@ -4,10 +4,8 @@ import Title from "@/components/Title";
 import { DropdownList, InputButton, InputCheckbox, InputDate, InputText } from "@/components/form";
 import styles from "@/styles/aup.module.css";
 import styleWaiter from "@/styles/other.module.css"
-import { getListPlayers, onListPlayerFilterSM, GP_Filter} from "@/utils/getPlayers";
-// import TableSheet from "@/components/TableSheet";
+import {getListPlayers, onListPlayerFilterSM} from "@/utils/getPlayers";
 import Navigate from "@/components/Navigate";
-// import Alert from "@/src/Alert";
 import Head from "next/head";
 
 type PlayerInfo = {
@@ -39,14 +37,11 @@ type PlayersByClub = {
   [key: string]: PlayerInfo[];
 };
 
-export default function Uep() {
-
-  // const emptyPlayers: DropdownOption[] = [];
-
+export default function Pol() {
   const [typeIndex, setTypeIndex] = useState<number>(0);
   const [numberIndex, setNumberIndex] = useState<number>(0);
   const [playersByClub, setPlayersByClub] = useState<PlayersByClub>({});
-  // const [showCopyAlert, setShowCopyAlert] = useState<boolean>(false);
+  const [clubOptions, setClubOptions] = useState<DropdownOption[]>([]);
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [club, setClub] = useState<string>("");
   const [wait, setWait] = useState<boolean>(false);
@@ -55,11 +50,6 @@ export default function Uep() {
   const numberOptions: DropdownOptionNumber[] = getNumberOptions();
 
   useEffect(() => {
-    onChangeType(0);
-  }, []);
-
-  useEffect(() => {
-    console.log("useEffect: numberIndex")
     const newNumber = numberOptions[numberIndex].value
     let newPlayers = [...players]
     newPlayers.splice(newNumber)
@@ -72,31 +62,25 @@ export default function Uep() {
       })
     }
     setPlayers(newPlayers)
-    
   }, [numberIndex]);
 
-  // for (let i = 0; i < numberOptions[numberIndex].value; i++) {
-  //   emptyPlayers.push({ value: "", label: "" });
-  // }
+  useEffect(() => {
+    const func = async () => {
+      const newPlayersByClub: PlayersByClub = await onGetPlayersByClub({ ...typeOptions[typeIndex] })
+      const newClubOptions: DropdownOption[] = []
+      Object.keys(newPlayersByClub).forEach((key) => {
+        newClubOptions.push({ value: key, label: key });
+      });
+      newClubOptions.sort((a, b) => {
+        return a.label.localeCompare(b.label);
+      });
+      setPlayersByClub(newPlayersByClub);
+      setClubOptions(newClubOptions)
+    }
 
-  const onChangeType = async (index: number) => {
-    setPlayersByClub(await onGetPlayersByClub({ ...typeOptions[index] }));
-    console.log(playersByClub)
-    setTypeIndex(index);
-  };
-
-  // const onChangeNumber = async (index: number) => {
-  //   // TODO
-  //   setNumberIndex(index);
-  // };
-
-  let clubOptions: DropdownOption[] = [];
-  Object.keys(playersByClub).forEach((key) => {
-    clubOptions.push({ value: key, label: key });
-  });
-  clubOptions.sort((a, b) => {
-    return a.label.localeCompare(b.label);
-  });
+    func()
+      .catch(console.error)
+  }, [typeIndex])  
 
   const onSetClub = (index: number) => {
     const playersEl = document.querySelectorAll<HTMLSelectElement>(".players");
@@ -117,10 +101,6 @@ export default function Uep() {
     setPlayers(newPlayers);
   };
 
-  
-
-// Add alert after send API reques
-
   return (
     <>
       <Head>
@@ -135,7 +115,7 @@ export default function Uep() {
             id="typeDropdown"
             className="typeDropdown"
             options={typeOptions}
-            onChange={onChangeType}
+            onChange={setTypeIndex}
           />
           <DropdownList
             label="Liczba oświadczeń"
@@ -165,19 +145,17 @@ export default function Uep() {
         <div className={styles.columnContainer}>
           <Section title="Zawodnicy" className={styles.column}>
             <PlayersForm
-              // key={typeIndex}
               players={players}
               playersByClub={playersByClub}
               club={club}
               className="players"
               setPlayers={setPlayers}
-              // {...typeOptions[typeIndex]}
             />
           </Section>
         </div>
         <div className={styles.btnContainer}>
           {wait ? (
-            <div className={styleWaiter.loader}></div> // pokazuje loader
+            <div className={styleWaiter.loader}></div>
           ) : (
             <InputButton
               id="btn"
@@ -192,11 +170,6 @@ export default function Uep() {
             />
           )}
         </div>
-        {/* <Alert
-          text="Skopiowano"
-          show={showCopyAlert}
-          onClick={() => setShowCopyAlert(false)}
-        /> */}
       </div>
     </>
   );
@@ -324,7 +297,6 @@ const PlayersForm = ({
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
 }) => {
   
-  // const [numberChange, setNumberChange] = useState(0);
   if (!(club in playersByClub)) return <></>;
 
   const onChangePlayer = (player: number, index: number, className: string) => {
@@ -334,9 +306,6 @@ const PlayersForm = ({
       newPlayers[player] = playersByClub[club][index]; 
       return newPlayers;
     });
-    // setNumberChange((oldChange) => {
-    //   return oldChange + 1;
-    // });
   };
 
   const playersEl = [];
@@ -354,23 +323,7 @@ const PlayersForm = ({
   }
   return (
     <>
-      {/* {defaultClub === undefined ? (
-        <DropdownList
-          label="Klub:"
-          options={clubOptions}
-          onChange={onSetClub}
-        />
-      ) : (
-        <p className={styles.defaultClub}>Klub: {defaultClub}</p>
-      )} */}
       {playersEl}
-      {/* <TableSheet
-        key={numberChange}
-        players={players}
-        className={className}
-        numberOfPlayersPlaying={numberOfPlayersPlaying}
-        numberOfReservePlayers={numberOfReservePlayers}
-      /> */}
     </>
   );
 };
@@ -385,22 +338,6 @@ const getNumberOptions = (): DropdownOptionNumber[] => {
   }
   return options
 }
-
-// const copyTable = (className: string) => {
-//   const tableEl = document.querySelector("table." + className);
-//   if (tableEl) {
-//     const range = document.createRange();
-//     range.selectNodeContents(tableEl);
-
-//     const selection = window.getSelection();
-//     if (selection) {
-//       selection.removeAllRanges();
-//       selection.addRange(range);
-//       document.execCommand("copy");
-//       selection.removeAllRanges();
-//     }
-//   }
-// };
 
 const getTypeOptions = (): TypeOption[] => {
   return [
