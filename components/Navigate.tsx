@@ -29,6 +29,13 @@ export default function Navigate() {
           title="Tworzenie Zapowiedzi YT"
           onClick={() => router.push("/tzy")}
           className={styles.option}
+        />  
+      </div>
+      <div className={styles.container}>
+        <Button
+          title="Przygotowanie Oświadczeń Lekarskich"
+          onClick={() => router.push("/pol")}
+          className={styles.option}
         />
         <Button
           title="Tworzenie Postu z Wynikami"

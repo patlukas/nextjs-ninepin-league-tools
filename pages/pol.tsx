@@ -3,7 +3,7 @@ import Section from "@/components/Section";
 import Title from "@/components/Title";
 import { DropdownList, InputButton, InputCheckbox, InputDate, InputText } from "@/components/form";
 import styles from "@/styles/aup.module.css";
-import { getListPlayers, onListPlayerFilterSM } from "@/utils/getPlayers";
+import { getListPlayers, onListPlayerFilterSM, GP_Filter} from "@/utils/getPlayers";
 // import TableSheet from "@/components/TableSheet";
 import Navigate from "@/components/Navigate";
 // import Alert from "@/src/Alert";
@@ -21,7 +21,7 @@ type TypeOption = {
   label: string;
   ageCategory: string[];
   possibleLoan: boolean;
-  onListPlayerFilter?: (players: PlayerInfo[]) => PlayerInfo[];
+  onListPlayerFilter?: (players: GP_Filter[]) => GP_Filter[];
 };
 
 type DropdownOption = {
@@ -118,9 +118,6 @@ export default function Uep() {
   
 
 // Add alert after send API reques
-// checkbox for border
-// date select
-// place select
 
   return (
     <>
@@ -166,13 +163,13 @@ export default function Uep() {
         <div className={styles.columnContainer}>
           <Section title="Zawodnicy" className={styles.column}>
             <PlayersForm
+              // key={typeIndex}
               players={players}
-              setPlayers={setPlayers}
-              key={typeIndex}
-              club={club}
               playersByClub={playersByClub}
+              club={club}
               className="players"
-              {...typeOptions[typeIndex]}
+              setPlayers={setPlayers}
+              // {...typeOptions[typeIndex]}
             />
           </Section>
         </div>
@@ -201,11 +198,31 @@ const prepareDocument = async ({
   players: PlayerInfo[]
 }) => {
   let date = document.querySelector<HTMLInputElement>("#dateInput")?.value ?? ""
+  if (date != "") {
+    const date_obj = new Date(date);
 
-  let place = document.querySelector<HTMLInputElement>("#placeInput")?.value ?? ""
+    const day = String(date_obj.getDate()).padStart(2, "0");
+    const month = String(date_obj.getMonth() + 1).padStart(2, "0");
+    const year = date_obj.getFullYear();
+
+    date = `${day}.${month}.${year}`;
+  }
+  const place = document.querySelector<HTMLInputElement>("#placeInput")?.value ?? ""
 
 
-  let body = {
+  let body: {
+    list_statement: {
+      id?: string;
+      name?: string,
+      birthday?: string,
+      team?: string,
+      date?: string,
+      place?: string
+    }[];
+    settings: {
+      border: boolean
+    }
+  } = {
     "list_statement": [],
     "settings": {
       "border": document.querySelector<HTMLInputElement>("#borderCheckbox")?.checked ?? false
@@ -213,7 +230,7 @@ const prepareDocument = async ({
   }
   for (let i=0; i<players.length; i++) {
     body.list_statement.push({
-      id: player[i].value,
+      id: players[i].value,
       name: players[i].name,
       birthday: "",
       team: players[i].clubHome,
@@ -243,7 +260,7 @@ const onGetPlayersByClub = async ({
 }: {
   ageCategory: string[];
   possibleLoan: boolean;
-  onListPlayerFilter?: (players: PlayerInfo[]) => PlayerInfo[];
+  onListPlayerFilter?: (players: GP_Filter[]) => GP_Filter[];
 }): Promise<PlayersByClub> => {
   const listPlayersFromApi = await getListPlayers(
     "",
@@ -274,7 +291,7 @@ const onGetPlayersByClub = async ({
   if (onListPlayerFilter) {
     playersByClub["KS Start Gostyń"] = onListPlayerFilter(
       playersByClub["KS Start Gostyń"]
-    );
+    ) as PlayerInfo[]; 
   }
   
   return playersByClub;
@@ -375,22 +392,22 @@ const getNumberOptions = (): DropdownOptionNumber[] => {
 const getTypeOptions = (): TypeOption[] => {
   return [
     {
-      value: "zs",
-      label: "Zawody Seniorskie",
-      ageCategory: ["Junior", "Mężczyzna", "Juniorka", "Kobieta"],
-      possibleLoan: true
-    },
-    {
       value: "sm",
       label: "Superliga Mężczyzn",
       ageCategory: ["Junior młodszy", "Junior", "Mężczyzna"],
       possibleLoan: true,
-      // onListPlayerFilter: onListPlayerFilterSM
+      onListPlayerFilter: onListPlayerFilterSM
     },
     {
       value: "sk",
       label: "Superliga Kobiet",
       ageCategory: ["Juniorka młodsza", "Juniorka", "Kobieta"],
+      possibleLoan: true
+    },
+    {
+      value: "zs",
+      label: "Zawody Seniorskie",
+      ageCategory: ["Junior", "Mężczyzna", "Juniorka", "Kobieta"],
       possibleLoan: true
     },
     {

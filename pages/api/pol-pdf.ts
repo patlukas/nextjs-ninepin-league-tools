@@ -164,6 +164,16 @@ const dict_printLayoutConfig: { [key: number]: PrintLayoutConfig } = {
 }
 
 
+const license_to_birthday: {[key: string]: string} = {
+    "264/97": "30.11.1972",
+    "2512/14": "28.08.2004",
+    "2055/10": "09.08.1997",
+    "1675/06": "04.10.1996",
+    "1847/08": "08.11.1995",
+    "2267/11": "06.06.2000",
+    "219/97": "30.04.1969"
+}
+
 // ----- Function ----- \\
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -211,12 +221,21 @@ const prepareStatements = async (
 
     for (let i = 0; i < list_statement.length; i++) {
         const {
+            id = "",
             name = template_statement["name"] ?? "",
-            birthday = template_statement["birthday"] ?? "",
             team = template_statement["team"] ?? "",
             place = template_statement["place"] ?? "",
             date = template_statement["date"] ?? "",
         } = list_statement[i]
+
+        let birthday = list_statement[i]["birthday"] ?? template_statement["birthday"] ?? ""
+        if (birthday == "" && id in license_to_birthday) {
+            birthday = license_to_birthday[id]
+        }
+
+        let place_and_date = ""
+        if (place != "" && date != "") place_and_date = place + ", " + date
+        else if (place == "" && date != "") place_and_date = "               , " + date
 
         const [tempPage] = await tempDoc.copyPages(templateDoc, [0]);
         const h = tempPage.getSize().height

@@ -7,9 +7,7 @@ type LicenseReturn = {
   ageCategory: string;
 }
 
-type Filter = {
-  value: string;
-  label: string;
+export type GP_Filter = {
   name: string;
   [key: string]: string;
 }
@@ -36,7 +34,7 @@ export const getListPlayers = async (
   return listPlayers;
 };
 
-export const onListPlayerFilterSM = (players: Filter[]): Filter[] => {
+export const onListPlayerFilterSM = (players: GP_Filter[]): GP_Filter[] => {
   const expectedPlayers = [
     "Dominik Dutkiewicz",
     "Włodzimierz Dutkiewicz",
@@ -53,7 +51,7 @@ export const onListPlayerFilterSM = (players: Filter[]): Filter[] => {
     "Szymon Banaszak",
     "Jakub Klimański"
   ]
-  let playersResult: Filter[] = [];
+  let playersResult: GP_Filter[] = [];
   if(players === undefined) return[];
   players.forEach(player => {
     if(player.name == "" || expectedPlayers.includes(player.name)) {
