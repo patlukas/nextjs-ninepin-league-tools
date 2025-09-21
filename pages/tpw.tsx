@@ -110,6 +110,11 @@ export default function Tpw({ teams }: { teams: DropdownOption[] }) {
                         label="Pobierz listę skoroszytów"
                         onClick={async () => onGetListSheet(setSheetOption, setGoogleSheetTitle)}
                     />
+                    <InputButtonSmall
+                        id="btnUrl2"
+                        label="Załaduj dane z linku"
+                        onClick={() => setValuesFromGoogleSheet(typeOptions[typeIndex].numberOfDuels, true)}
+                    />
                     <div></div>
                     <DropdownList
                         label={`Lista skoroszytów w arkuszu: \r\n${googleSheetTitle}`}
@@ -611,10 +616,23 @@ const removeQuotation = (value: string): string => {
     return parseFloat(value.replaceAll('"', '').replace(",", ".")).toString()
 }
 
-const setValuesFromGoogleSheet = async (numberOfDuels: number) => {
-    const urlEl = document.querySelector<HTMLInputElement>(`#sheetDropdown`);
-    if(urlEl === undefined || urlEl === null) return
-    const url = urlEl.value
+const setValuesFromGoogleSheet = async (numberOfDuels: number, fromUrl?: boolean) => {
+    let url = ""
+    if(fromUrl) {
+        const urlEl = document.querySelector<HTMLInputElement>(`#urlInput`);
+        if(urlEl === undefined || urlEl === null) return
+        const u = urlEl.value
+        const spreadsheetId = u.split("/d/")[1].split("/")[0]
+        const gid = u.split("#gid=")[1]
+        url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?gid=${gid}&format=csv`
+    }
+    else {
+        const urlEl = document.querySelector<HTMLInputElement>(`#sheetDropdown`);
+        if(urlEl === undefined || urlEl === null) return
+        url = urlEl.value
+    }
+    if (url == "") return
+    
 
     const data = await onGetDataFromGoogleSheet(url, numberOfDuels)
     if(data === undefined) return
