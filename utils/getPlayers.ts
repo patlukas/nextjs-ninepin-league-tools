@@ -34,7 +34,8 @@ export const getListPlayers = async (
   return listPlayers;
 };
 
-export const onListPlayerFilterSM = (players: GP_Filter[]): GP_Filter[] => {
+// export const onListPlayerFilterSM = (players: GP_Filter[]): GP_Filter[] => {
+export const onListPlayerFilterSM = <T extends { name: string }>(players: T[]): T[] => {
   const expectedPlayers = [
     "Dominik Dutkiewicz",
     "Włodzimierz Dutkiewicz",
@@ -51,7 +52,7 @@ export const onListPlayerFilterSM = (players: GP_Filter[]): GP_Filter[] => {
     "Szymon Banaszak",
     "Jakub Klimański"
   ]
-  let playersResult: GP_Filter[] = [];
+  let playersResult: T[] = [];
   if(players === undefined) return[];
   players.forEach(player => {
     if(player.name == "" || expectedPlayers.includes(player.name)) {

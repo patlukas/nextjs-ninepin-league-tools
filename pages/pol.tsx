@@ -22,7 +22,7 @@ type TypeOption = {
   label: string;
   ageCategory: string[];
   possibleLoan: boolean;
-  onListPlayerFilter?: (players: GP_Filter[]) => GP_Filter[];
+  onListPlayerFilter?: (players: PlayerInfo[]) => PlayerInfo[];
 };
 
 type DropdownOption = {
@@ -207,7 +207,7 @@ const prepareDocument = async ({
   endFunc
 }: {
   players: PlayerInfo[],
-  endFunc: () => {}
+  endFunc: () => void
 }) => {
   let date = document.querySelector<HTMLInputElement>("#dateInput")?.value ?? ""
   if (date != "") {
@@ -273,7 +273,7 @@ const onGetPlayersByClub = async ({
 }: {
   ageCategory: string[];
   possibleLoan: boolean;
-  onListPlayerFilter?: (players: GP_Filter[]) => GP_Filter[];
+  onListPlayerFilter?: (players: PlayerInfo[]) => PlayerInfo[];
 }): Promise<PlayersByClub> => {
   const listPlayersFromApi = await getListPlayers(
     "",
