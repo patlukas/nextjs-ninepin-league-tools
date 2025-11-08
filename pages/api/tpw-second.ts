@@ -95,7 +95,7 @@ const drawTeamResult = async (
         drawText(ctx, players[i].results[4].x, x+425, y+23*4+aY*i, "bold", 24)
         drawSpecialText(ctx, 600, 650, 700, players[i].results[4].s, x+475, y+23*4+aY*i, "bold", 24)
         drawText(ctx, players[i].results[4].ps, x+525, y+23*4+aY*i, "bold", 24)
-        drawGrayTextIf0(ctx, players[i].pd, x+567, y + 45+aY*i, "bold", 65)
+        drawGrayTextIf0WithMaxX(ctx, players[i].pd, x+567, y + 45+aY*i, "bold", 65, 50)
     }
 }
 
@@ -105,10 +105,23 @@ const drawGrayTextIf0 = (
     x: number,
     y: number,
     option: string, 
-    fontSize: number
+    fontSize: number,
 ) => {
     const fillStyle = text == "0" ? "#666" : "#fff"
     drawText(ctx, text, x, y, option, fontSize, "center", fillStyle)
+}
+
+const drawGrayTextIf0WithMaxX = (
+    ctx: CanvasRenderingContext2D, 
+    text: string,
+    x: number,
+    y: number,
+    option: string, 
+    fontSize: number,
+    maxX: number
+) => {
+    const fillStyle = text == "0" ? "#666" : "#fff"
+    drawTextWithMaxX(ctx, text, x, y, maxX, option, fontSize, "center", fillStyle)
 }
 
 const drawSpecialText = (
