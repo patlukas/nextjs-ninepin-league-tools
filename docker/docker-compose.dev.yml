@@ -10,3 +10,5 @@ services:
       - ..:/usr/src/app:z
       - /usr/src/app/node_modules
     command: npm run dev
+    env_file:
+      - ../.env.local
