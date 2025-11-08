@@ -21,7 +21,7 @@
     },
     {
         "value": "sierakow",
-        "label": "KK Wrzos Podolski\nSieraków"
+        "label": "SKK Wrzos Podolski\nSieraków"
     },
     {
         "value": "tuchola",
@@ -42,5 +42,13 @@
     {
         "value": "laziska",
         "label": " KS Polonia\nŁaziska Górne"
+    },
+    {
+        "value": "sierakow_kk",
+        "label": "KK Wrzos Podolski\nSieraków"
+    },
+    {
+        "value": "wronki_amica",
+        "label": "KK Dziewiątka-Amica\nWronki"
     }
 ]
