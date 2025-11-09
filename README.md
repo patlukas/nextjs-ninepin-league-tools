@@ -12,7 +12,46 @@ Projekt został napisany w **Next.js** (wersja 13.4.19) z wykorzystaniem **Node.
 
 ---
 
-## Wymagania systemowe
+Świetnie! Mogę przepisać Twój README tak, aby odzwierciedlał nowy sposób uruchamiania projektu z wykorzystaniem Docker Compose. Oto przykładowa nowa wersja sekcji **Uruchamianie projektu**:
+
+---
+
+## Uruchamianie projektu
+
+Projekt można teraz uruchomić w kilku trybach przy użyciu **Docker Compose** z folderu `docker`.
+
+### Tryb developerski
+
+Uruchomienie wersji developerskiej projektu (hot-reload, debugowanie):
+
+```bash
+docker-compose -f docker/docker-compose.dev.yml up --build
+```
+
+### Tryb produkcyjny (lokalny build)
+
+Budowanie kontenera produkcyjnego i uruchamianie go lokalnie:
+
+```bash
+docker-compose -f docker/docker-compose.prod.yml up --build
+```
+
+### Tryb produkcyjny (Docker Hub)
+
+Uruchomienie gotowego kontenera produkcyjnego pobranego z Docker Hub:
+
+```bash
+docker-compose -f docker/docker-compose.yml up
+```
+
+---
+
+## Stara metoda uruchamiania
+
+Dla porównania, poprzednia metoda bez Dockera wyglądała tak:
+
+
+### Wymagania systemowe
 
 - Node.js 18.x
 - npm 10.x
@@ -20,7 +59,7 @@ Projekt został napisany w **Next.js** (wersja 13.4.19) z wykorzystaniem **Node.
 
 ---
 
-## Instalacja
+### Instalacja
 
 1. Sklonuj repozytorium:
    ```bash
@@ -33,26 +72,19 @@ Projekt został napisany w **Next.js** (wersja 13.4.19) z wykorzystaniem **Node.
    npm install
    ```
 
----
-
-## Uruchamianie projektu
-
-Oczywiście! Oto zaktualizowana sekcja w pliku `README.md` dotycząca konfiguracji klucza API do Google Sheets:
-
----
-
-## Konfiguracja środowiska
+### Konfiguracja środowiska
 
 Aby umożliwić odczytywanie danych z Google Sheets, należy skonfigurować klucz API w pliku `.env.local`.
 
-1. **Utwórz plik `.env.local`** w głównym katalogu projektu, jeśli go jeszcze nie ma:
+1. **Utwórz plik `.env`** w katalogu `docker`, jeśli go jeszcze nie ma:
    ```bash
-   touch .env.local
+   touch docker/.env
    ```
 
-2. **Dodaj klucz API Google Sheets** do pliku `.env.local`:
+2. **Dodaj klucz API Google Sheets** do pliku `.env`:
    ```env
    API_KEY=twój_klucz_api
+   WEB_PORT=port_wykorzystywany_w_docker_compose
    ```
    - `twój_klucz_api` to klucz API uzyskany z [Google Cloud Console](https://console.cloud.google.com/).
    - Upewnij się, że klucz ma uprawnienia do odczytywania danych z Google Sheets.
