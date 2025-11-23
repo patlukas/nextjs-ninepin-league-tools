@@ -49,7 +49,8 @@ export const onListPlayerFilterSM = <T extends { name: string }>(players: T[]): 
     "Bogusław Zagata",
     "Krzysztof Zagata",
     "Szymon Banaszak",
-    "Jakub Klimański"
+    "Jakub Klimański",
+    "Krzysztof Stachowiak"
   ]
   let playersResult: T[] = [];
   if(players === undefined) return[];

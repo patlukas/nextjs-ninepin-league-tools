@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   app:
-    image: patlukas/nnlt:1.0.1
+    image: patlukas/nnlt:latest
     ports:
       - "${WEB_PORT}:3000"
     restart: unless-stopped
