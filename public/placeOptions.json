@@ -32,6 +32,10 @@
         "label": "Kręgielnia w Tucholi"
     },
     {
+        "value": "laziska",
+        "label": "Kręgielnia w Łaziskach Górnych"
+    },
+    {
         "value": "wronki",
         "label": "Kręgielnia wa Wronkach"
     }
